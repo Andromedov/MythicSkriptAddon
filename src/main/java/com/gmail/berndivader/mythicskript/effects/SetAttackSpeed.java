@@ -1,5 +1,6 @@
 package com.gmail.berndivader.mythicskript.effects;
 
+import org.bukkit.attribute.Attribute;
 import org.jetbrains.annotations.Nullable;
 
 import org.bukkit.attribute.AttributeInstance;
@@ -36,8 +37,8 @@ public class SetAttackSpeed extends Effect {
 		double amount = this.amount.getSingle(e).doubleValue();
 		if (am==null || !am.getEntity().isLiving()) return;
 		LivingEntity le = (LivingEntity)am.getEntity().getBukkitEntity();
-		if (le.getAttribute(org.bukkit.attribute.Attribute.GENERIC_ATTACK_SPEED)!=null) {
-			AttributeInstance ai = le.getAttribute(org.bukkit.attribute.Attribute.GENERIC_ATTACK_SPEED);
+		if (le.getAttribute(Attribute.ATTACK_SPEED)!=null) {
+			AttributeInstance ai = le.getAttribute(Attribute.ATTACK_SPEED);
 			ai.setBaseValue(amount);
 		}
 	}

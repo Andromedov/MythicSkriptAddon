@@ -52,8 +52,9 @@ public class SetOwner extends Effect {
 			}
 		} else {
 			Entity owner = skriptEntity.getSingle(e);
-			uuid = owner.getUniqueId();
+            assert owner != null;
+            uuid = owner.getUniqueId();
 		}
-		am.setOwner(uuid);
+		am.setOwnerUUID(uuid);
 	}
 }

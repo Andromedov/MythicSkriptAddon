@@ -1,5 +1,6 @@
 package com.gmail.berndivader.mythicskript.effects;
 
+import org.bukkit.attribute.Attribute;
 import org.jetbrains.annotations.Nullable;
 
 import org.bukkit.attribute.AttributeInstance;
@@ -35,8 +36,8 @@ public class SetFollowRange extends Effect {
 		double amount = this.amount.getSingle(e).doubleValue();
 		if (am==null || !am.getEntity().isLiving()) return;
 		LivingEntity le = (LivingEntity)am.getEntity().getBukkitEntity();
-		if (le.getAttribute(org.bukkit.attribute.Attribute.GENERIC_FOLLOW_RANGE)!=null) {
-			AttributeInstance ai = le.getAttribute(org.bukkit.attribute.Attribute.GENERIC_FOLLOW_RANGE);
+		if (le.getAttribute(Attribute.FOLLOW_RANGE)!=null) {
+			AttributeInstance ai = le.getAttribute(Attribute.FOLLOW_RANGE);
 			ai.setBaseValue(amount);
 		}
 	}

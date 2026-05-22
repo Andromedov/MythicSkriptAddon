@@ -1,5 +1,6 @@
 package com.gmail.berndivader.mythicskript.expressions;
 
+import java.util.Objects;
 import java.util.UUID;
 
 import org.jetbrains.annotations.Nullable;
@@ -36,7 +37,7 @@ public class GetOwner extends SimpleExpression<Entity> {
 
 	@Override
 	public String toString(@Nullable Event e, boolean var2) {
-		return getClass().getSimpleName()+e!=null?"@"+e.getEventName():"";
+		return "@"+e.getEventName();
 	}
 
 	@Override
@@ -44,7 +45,7 @@ public class GetOwner extends SimpleExpression<Entity> {
 	protected Entity[] get(Event e) {
 		ActiveMob am = activeMob.getSingle(e);
 		if (am!=null && am.getOwner().isPresent()) {
-			UUID uuid = am.getOwner().get();
+			UUID uuid = Objects.requireNonNull(am.getOwner().get()).getUniqueId();
 			return new Entity[]{Bukkit.getEntity(uuid)};
 		};
 		return null;
