@@ -4,6 +4,7 @@ import org.jetbrains.annotations.Nullable;
 
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.event.Event;
 
 import ch.njol.skript.lang.Effect;
@@ -26,19 +27,18 @@ public class SetSpeed extends Effect {
 
 	@Override
 	public String toString(@Nullable Event e, boolean var2) {
-		return getClass().getSimpleName()+e!=null?"@"+e.getEventName():"";
+		return "set speed of activemob";
 	}
 
 	@Override
 	protected void execute(Event e) {
 		ActiveMob am = this.activeMob.getSingle(e);
-		double amount = this.amount.getSingle(e).doubleValue();
-		if (am==null || !am.getEntity().isLiving()) return;
-		LivingEntity le = (LivingEntity)am.getEntity();
-		if (le.getAttribute(org.bukkit.attribute.Attribute.GENERIC_MOVEMENT_SPEED)!=null) {
-			AttributeInstance ai = le.getAttribute(org.bukkit.attribute.Attribute.GENERIC_MOVEMENT_SPEED);
-			ai.setBaseValue(amount);
-		}
-	}
+		if (am == null || !am.getEntity().isLiving()) return;
 
+		double val = this.amount.getSingle(e).doubleValue();
+		LivingEntity le = (LivingEntity) am.getEntity().getBukkitEntity();
+
+		AttributeInstance ai = le.getAttribute(Attribute.MOVEMENT_SPEED);
+		if (ai != null) ai.setBaseValue(val);
+	}
 }

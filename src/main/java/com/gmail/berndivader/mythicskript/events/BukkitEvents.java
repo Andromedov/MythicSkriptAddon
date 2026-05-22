@@ -20,49 +20,55 @@ import io.lumine.mythic.core.skills.SkillCondition;
 import io.lumine.mythic.core.skills.SkillMechanic;
 
 public class BukkitEvents implements Listener {
-	
+
 	public BukkitEvents() {
 		MythicSkript.plugin.getServer().getPluginManager().registerEvents(this,MythicSkript.plugin);
 	}
 
 	@EventHandler
 	public void onCreatureSpawnEvent(CreatureSpawnEvent e) {
-		if (e.getSpawnReason().equals(SpawnReason.CUSTOM) && !e.isCancelled()) {
-			Entity bukkitEntity = e.getEntity();
-			new BukkitRunnable() {
-				@Override
-				public void run() {
-					if (!(Utils.mythicHelper.isMythicMob(bukkitEntity))) return;
-					ActiveMob am = Utils.mythicHelper.getMythicMobInstance(bukkitEntity);
-					if (am.getSpawner()!=null) {
-						MythicSkriptSpawnerSpawnEvent e = new MythicSkriptSpawnerSpawnEvent(am.getSpawner(), am);
-						Bukkit.getServer().getPluginManager().callEvent(e);
-					}
-					MythicSkriptSpawnEvent e = new MythicSkriptSpawnEvent(am);
-					Bukkit.getServer().getPluginManager().callEvent(e);
+		if (!e.getSpawnReason().equals(SpawnReason.CUSTOM) || e.isCancelled()) return;
+
+		Entity bukkitEntity = e.getEntity();
+		new BukkitRunnable() {
+			@Override
+			public void run() {
+				if (!Utils.mythicHelper.isMythicMob(bukkitEntity)) return;
+
+				ActiveMob am = Utils.mythicHelper.getMythicMobInstance(bukkitEntity);
+				if (am == null) return;
+
+				// Triggers spawner and spawn events for active mob
+				if (am.getSpawner() != null) {
+					Bukkit.getServer().getPluginManager()
+							.callEvent(new MythicSkriptSpawnerSpawnEvent(am.getSpawner(), am));
 				}
-			}.runTaskLater(MythicSkript.plugin, 1l);
-		}
+				Bukkit.getServer().getPluginManager()
+						.callEvent(new MythicSkriptSpawnEvent(am));
+			}
+		}.runTaskLater(MythicSkript.plugin, 1L);
 	}
-	
+
 	@EventHandler
 	public void onMythicMobsCustomMechanicsLoad(MythicMechanicLoadEvent e) {
-		if (e.getMechanicName().toLowerCase().equals("skriptskill")) {
-			SkillMechanic skill;
-			if ((skill = new MythicSkriptSkill(e.getContainer(), e.getConfig())) != null) e.register(skill);
+		String name = e.getMechanicName().toLowerCase();
+		if (name.equals("skriptskill") || name.equals("skfunction")) {
+			SkillMechanic skill = new MythicSkriptSkill(e.getContainer(), e.getConfig());
+			e.register(skill);
 		}
 	}
+
+
 	@EventHandler
 	public void onMythicMobsCustomConditionsLoad(MythicConditionLoadEvent e) {
-		if (e.getConditionName().toLowerCase().equals("skriptcondition")) {
-			SkillCondition condition;
-			if ((condition = new MythicSkriptCondition(e.getConditionName(), e.getConfig())) != null) e.register(condition);
-		} else if (e.getConditionName().toLowerCase().equals("skriptspawncondition")) {
-			SkillCondition condition;
-			if ((condition = new MythicSkriptSpawnCondition(e.getConditionName(), e.getConfig())) != null) e.register(condition);
-		} else if (e.getConditionName().toLowerCase().equals("skripttargetcondition")) {
-			SkillCondition condition;
-			if ((condition = new MythicSkriptTargetCondition(e.getConditionName(), e.getConfig())) != null) e.register(condition);
-		}
+		String name = e.getConditionName().toLowerCase();
+		// Creates and assigns custom condition based on name
+		SkillCondition condition = switch (name) {
+			case "skriptcondition"      -> new MythicSkriptCondition(e.getConditionName(), e.getConfig());
+			case "skriptspawncondition" -> new MythicSkriptSpawnCondition(e.getConditionName(), e.getConfig());
+			case "skripttargetcondition"-> new MythicSkriptTargetCondition(e.getConditionName(), e.getConfig());
+			default                     -> null;
+		};
+		if (condition != null) e.register(condition);
 	}
 }
