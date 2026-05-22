@@ -1,23 +1,22 @@
 package com.gmail.berndivader.mythicskript.functions;
 
+import org.bukkit.Location;
+import org.bukkit.entity.Entity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.inventory.ItemStack;
 
 import com.gmail.berndivader.mythicskript.MythicSkript;
-import com.gmail.berndivader.mythicskript.functions.conditions.CompareEntitiesCondition;
-import com.gmail.berndivader.mythicskript.functions.conditions.CompareEntityLocationCondition;
-import com.gmail.berndivader.mythicskript.functions.conditions.CompareLocationsCondition;
-import com.gmail.berndivader.mythicskript.functions.conditions.EntityCondition;
-import com.gmail.berndivader.mythicskript.functions.conditions.LocationCondition;
+import com.gmail.berndivader.mythicskript.functions.conditions.*;
 import com.gmail.berndivader.mythicskript.functions.drops.ItemDrop;
 import com.gmail.berndivader.mythicskript.functions.drops.MessageDrop;
 import com.gmail.berndivader.mythicskript.functions.mechanics.SkriptfunctionMechanic;
 import com.gmail.berndivader.mythicskript.functions.targeters.EntityTargeter;
 import com.gmail.berndivader.mythicskript.functions.targeters.LocationTargeter;
 
-import ch.njol.skript.Skript;
 import ch.njol.skript.lang.function.Function;
-import ch.njol.skript.lang.function.Parameter;
+import org.skriptlang.skript.common.function.Parameters;
+
 import io.lumine.mythic.api.config.MythicLineConfig;
 import io.lumine.mythic.bukkit.events.MythicConditionLoadEvent;
 import io.lumine.mythic.bukkit.events.MythicDropLoadEvent;
@@ -25,123 +24,115 @@ import io.lumine.mythic.bukkit.events.MythicMechanicLoadEvent;
 import io.lumine.mythic.bukkit.events.MythicTargeterLoadEvent;
 
 public class Functions implements Listener {
-	
-	public static void register() {
-		new Functions();
-	}
-	
+
 	public Functions() {
-		MythicSkript.plugin.getServer().getPluginManager().registerEvents(this,MythicSkript.plugin);
+		MythicSkript.plugin.getServer().getPluginManager()
+				.registerEvents(this, MythicSkript.plugin);
 	}
-	
+
+	private Function<?> getFunctionByConfig(MythicLineConfig mlc) {
+		String fname = mlc.getString(new String[]{"name", "n"}, "");
+		if (fname.isBlank()) return null;
+		return ch.njol.skript.lang.function.Functions.getFunction(fname, null);
+	}
+
+	/**
+	 * Registers custom mechanic for specific names
+	 */
+	@SuppressWarnings("unused")
 	@EventHandler
-	public void onMythicMobsCustomMechanicsLoad(MythicMechanicLoadEvent e) {
-		
-		switch(e.getMechanicName().toLowerCase()) {
-		case "skriptfunction":
-		case "skfunction":
-			e.register(new SkriptfunctionMechanic(e.getContainer(),e.getConfig()));
-			break;
+	public void onMechanicLoad(MythicMechanicLoadEvent e) {
+		switch (e.getMechanicName().toLowerCase()) {
+			case "skriptskill", "skfunction" ->
+					e.register(new SkriptfunctionMechanic(e.getContainer(), e.getConfig()));
 		}
 	}
-	
+
+	/**
+	 * Handles condition loading with parameter validation
+	 */
+	@SuppressWarnings("unused")
 	@EventHandler
-	public void onMythicMobsCustomConditionsLoad(MythicConditionLoadEvent e) {
-		
-		switch(e.getConditionName().toLowerCase()) {
-		case "skfunction":
-		case "skriptfunction":
-			MythicLineConfig mlc=e.getConfig();
-			String name=mlc.getString("name","");
-			Function<?>function=ch.njol.skript.lang.function.Functions.getGlobalFunction(name);
-			if(function!=null) {
-				if(function.getReturnType().getCodeName().equals("boolean")) {
-					Parameter<?>[]parameters=function.getParameters();
-					int size=parameters.length;
-					if(size==1) {
-						if (parameters[0].getType().getCodeName().equals("entity")) {
-							e.register(new EntityCondition(e.getConditionName(),e.getConfig(),function));
-						} else if(parameters[0].getType().getCodeName().equals("location")) {
-							e.register(new LocationCondition(e.getConditionName(),e.getConfig(),function));
-						} else {
-							Skript.warning("No valid parameter found for "+name);
-						}
-					} else if(size==2) {
-						boolean para0=parameters[0].getType().getCodeName().equals("entity");
-						boolean para1=parameters[1].getType().getCodeName().equals("entity");
-						
-						if(para0&&para1) {
-							e.register(new CompareEntitiesCondition(e.getConditionName(),e.getConfig(),function));
-						} else if(!para0&&!para1) {
-							e.register(new CompareLocationsCondition(e.getConditionName(),e.getConfig(),function));
-						} else {
-							e.register(new CompareEntityLocationCondition(e.getConditionName(),e.getConfig(),function,para0));
-						}
-						
-					} else {
-						Skript.warning("There was an error with the given paramters for "+name);
-					}
+	public void onConditionLoad(MythicConditionLoadEvent e) {
+		if (!e.getConditionName().equalsIgnoreCase("skfunction")) return;
+
+		Function<?> function = getFunctionByConfig(e.getConfig());
+		if (function == null) return;
+
+		Parameters params = function.getSignature().parameters();
+		if (params.size() == 0) return;
+
+		Class<?> p0 = params.get(0).type();
+
+		if (params.size() == 1) {
+			// Registers condition for a single-parameter entity or location
+			if (isEntity(p0)) {
+				e.register(new EntityCondition(e.getConditionName(), e.getConfig(), function));
+			} else if (isLocation(p0)) {
+				e.register(new LocationCondition(e.getConditionName(), e.getConfig(), function));
+			}
+			return;
+		}
+
+		Class<?> p1 = params.get(1).type();
+
+		// Registers conditions for entity and location comparisons
+		if (isEntity(p0) && isEntity(p1)) {
+			e.register(new CompareEntitiesCondition(e.getConditionName(), e.getConfig(), function));
+		} else if (isLocation(p0) && isLocation(p1)) {
+			e.register(new CompareLocationsCondition(e.getConditionName(), e.getConfig(), function));
+		} else if (isEntity(p0) && isLocation(p1)) {
+			e.register(new CompareEntityLocationCondition(e.getConditionName(), e.getConfig(), function, true));
+		} else if (isLocation(p0) && isEntity(p1)) {
+			e.register(new CompareEntityLocationCondition(e.getConditionName(), e.getConfig(), function, false));
+		}
+	}
+
+	/**
+	 * Handles targeter loading; registers based on return type
+	 */
+	@SuppressWarnings("unused")
+	@EventHandler
+	public void onTargeterLoad(MythicTargeterLoadEvent e) {
+		if (!e.getTargeterName().equalsIgnoreCase("skfunction")) return;
+
+		Function<?> function = getFunctionByConfig(e.getConfig());
+		if (function == null) return;
+
+		Class<?> returnType = function.type();
+		if (returnType == null) return;
+
+		// Registers targeter based on function return type
+		if (isEntity(returnType)) {
+			e.register(new EntityTargeter(e.getConfig(), function));
+		} else if (isLocation(returnType)) {
+			e.register(new LocationTargeter(e.getConfig(), function));
+		}
+	}
+
+	@SuppressWarnings("unused")
+	@EventHandler
+	public void onDropLoad(MythicDropLoadEvent e) {
+		switch (e.getDropName().toLowerCase()) {
+			case "skfunction", "skriptfunction" -> {
+				Function<?> function = getFunctionByConfig(e.getConfig());
+				if (function == null) return;
+
+				Class<?> returnType = function.type();
+				if (returnType != null && ItemStack.class.isAssignableFrom(returnType)) {
+					e.register(new ItemDrop(e.getDropName(), e.getConfig(), function));
 				} else {
-					Skript.warning("The return type for skriptcondition function "+name+" requires to be boolean but is "+function.getReturnType().getCodeName());
+					e.register(new MessageDrop(e.getDropName(), e.getConfig(), function));
 				}
-			} else {
-				Skript.warning("Cant find function "+name);
 			}
-			break;
 		}
 	}
-	
-	@EventHandler
-	public void onMythicMobsCustomTargeterLoad(MythicTargeterLoadEvent e) {
-		
-		switch(e.getTargeterName().toLowerCase()) {
-		case "skfunction":
-		case "skriptfunction":
-			MythicLineConfig mlc=e.getConfig();
-			String name=mlc.getString("name","");
-			Function<?>function=ch.njol.skript.lang.function.Functions.getGlobalFunction(name);
-			if(function!=null) {
-				String returnType=function.getReturnType().getCodeName();
-				if(returnType.equals("location")) {
-					e.register(new LocationTargeter(mlc,function));
-				} else if(returnType.equals("entity")) {
-					e.register(new EntityTargeter(mlc, function));
-				} else {
-					Skript.warning("Expected return type for skript targeter "+name+" requires to be entity or location list but is "+returnType);
-				}
-			} else {
-				Skript.warning("Cant find function "+name);
-			}
-			break;
-		}
-		
+
+	private static boolean isEntity(Class<?> type) {
+		return Entity.class.isAssignableFrom(type);
 	}
-	
-	@EventHandler
-	public void onMythicMobsDropLoad(MythicDropLoadEvent e) {
-		
-		switch(e.getDropName().toLowerCase()) {
-		case "skfunction":
-		case "skriptfunction":
-			String name=e.getConfig().getString("name","");
-			Function<?>function=ch.njol.skript.lang.function.Functions.getGlobalFunction(name);
-			if(function!=null) {
-				switch(function.getReturnType().getCodeName()) {
-				case "itemstack":
-					e.register(new ItemDrop(e.getContainer().getConfigLine(),e.getConfig(),function));
-					break;
-				case "string":
-					e.register(new MessageDrop(e.getContainer().getConfigLine(),e.getConfig(),function));
-					break;
-				default:
-					Skript.warning("Expected return type for skript drop "+name+" requires to be itemstack or string but is "+function.getReturnType().getCodeName());
-					break;
-				}
-			} else {
-				Skript.warning("Cant find function "+name);
-			}
-			break;
-		}
-		
+
+	private static boolean isLocation(Class<?> type) {
+		return Location.class.isAssignableFrom(type);
 	}
 }
