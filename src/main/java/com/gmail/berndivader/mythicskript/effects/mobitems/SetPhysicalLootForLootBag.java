@@ -48,11 +48,15 @@ public class SetPhysicalLootForLootBag extends Effect {
 		List<Drop> newDrops = new ArrayList<>();
 		if (exprItem != null) {
 			if (exprItem.isSingle()) {
-				AbstractItemStack item = BukkitAdapter.adapt(exprItem.getSingle(event));
-				newDrops.add(new SimpleItemDrop(item));
+				ItemStack item = exprItem.getSingle(event);
+				if (item != null) {
+					newDrops.add(new SimpleItemDrop(item));
+				}
 			} else {
 				for (ItemStack stack : exprItem.getArray(event)) {
-					newDrops.add(new SimpleItemDrop(BukkitAdapter.adapt(stack)));
+					if (stack != null) {
+						newDrops.add(new SimpleItemDrop(stack));
+					}
 				}
 			}
 		}
@@ -61,17 +65,19 @@ public class SetPhysicalLootForLootBag extends Effect {
 
 	private static class SimpleItemDrop extends Drop implements IItemDrop {
 
-		private final AbstractItemStack item;
+		private final ItemStack item;
 
-		SimpleItemDrop(AbstractItemStack item) {
+		SimpleItemDrop(ItemStack item) {
 			super("MMSK_DROP", null);
 			this.item = item;
-			this.setAmount(1);
+			this.setAmount(item.getAmount());
 		}
 
 		@Override
 		public AbstractItemStack getDrop(DropMetadata data, double amount) {
-			return item;
+			ItemStack cloned = item.clone();
+			cloned.setAmount(Math.max(1, (int) amount));
+			return BukkitAdapter.adapt(cloned);
 		}
 	}
 }
