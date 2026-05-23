@@ -2,7 +2,7 @@
 
 All notable changes to this project will be documented in this file.
 
-## [1.0.0] - Current Update (2026)
+## [1.0.0] - Current Update (2026-05-22 / 2026-05-23)
 
 ### Added / Changed
 
@@ -11,6 +11,7 @@ All notable changes to this project will be documented in this file.
 * Improved type safety checks for arguments (`SkillMetadata`, `Location`, `Entity`) in the `SkriptfunctionMechanic`.
 * Fixed potential `ArrayIndexOutOfBoundsException` bugs in condition classes (e.g., `CompareEntityLocationCondition`).
 * Fixed an argument overwriting bug in the `ItemDrop` class.
+* Created a [wiki page](https://github.com/Andromedov/MythicSkriptAddon/wiki) for the plugin.
 
 ## [0.99.7] - 2024-04-12
 

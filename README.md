@@ -43,8 +43,8 @@ function my_custom_skill(data: skilldata, target: entity, loc: location) :: bool
 ```
 
 ## 📖 Documentation & Syntax
-A comprehensive list of expressions, effects, events, and a detailed guide on working with `skfunction` 
-can be found on our Wiki page (Note: The Wiki is currently being under construction and will be updated soon).
+A comprehensive list of expressions, effects, events, and a detailed guide 
+on working with `skfunction` can be found on our [Wiki page](https://github.com/Andromedov/MythicSkriptAddon/wiki).
 
 ## 📜 Changelog
 All changes, updates to new API versions, and bug fixes are documented in the [CHANGELOG.md]() file.
