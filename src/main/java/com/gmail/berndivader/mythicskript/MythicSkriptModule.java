@@ -55,7 +55,6 @@ import io.lumine.mythic.core.skills.SkillTargeter;
 import io.lumine.mythic.core.skills.targeters.*;
 import io.lumine.mythic.core.spawning.spawners.MythicSpawner;
 
-
 public class MythicSkriptModule implements AddonModule {
 
     @Override
@@ -185,10 +184,7 @@ public class MythicSkriptModule implements AddonModule {
                     @Override public boolean canParse(ParseContext ctx) { return false; }
                     @Override
                     public String toString(SkillTargeter t, int f) {
-                        if (t instanceof IEntitySelector)  return "EntitySelector";
-                        if (t instanceof ILocationSelector) return "LocationSelector";
-                        if (t instanceof ConsoleTargeter)  return "ConsoleTargeter";
-                        return "unsupported";
+                        return t.getClass().getSimpleName();
                     }
                     @Override public String toVariableNameString(SkillTargeter t) { return t.toString(); }
                 }));
@@ -229,35 +225,27 @@ public class MythicSkriptModule implements AddonModule {
         eff(registry, SetLevel.class,          "set level of activemob %activemob% to %number%");
         eff(registry, SetPlayerKills.class,    "set kills of activemob %activemob% to %number%");
 
-        registry.register(SyntaxRegistry.EFFECT,
-                SyntaxInfo.builder(SetOwner.class)
-                        .addPattern("set owner of activemob %activemob% to %entity%")
-                        .addPattern("set owner of activemob %activemob% to %string% by uuid")
-                        .build());
+        eff(registry, SetOwner.class,
+                "set owner of activemob %activemob% to %entity%",
+                "set owner of activemob %activemob% to %string% by uuid");
 
         eff(registry, SendSignal.class,        "send signal %string% to activemob %activemob% with trigger %entity%");
         eff(registry, RemoveMob.class,         "remove activemob %activemob%");
         eff(registry, SetHealth.class,         "set health of activemob %activemob% to %number%");
         eff(registry, SetMaxHealth.class,      "set maxhealth of activemob %activemob% to %number%");
 
-        registry.register(SyntaxRegistry.EFFECT,
-                SyntaxInfo.builder(MakeMobCastSkill.class)
-                        .addPattern("make activemob %activemob% cast skill %string% with trigger %entity% at target %entity%")
-                        .addPattern("make activemob %activemob% cast skill %string% with trigger %entity% at location %location%")
-                        .build());
+        eff(registry, MakeMobCastSkill.class,
+                "make activemob %activemob% cast skill %string% with trigger %entity% at target %entity%",
+                "make activemob %activemob% cast skill %string% with trigger %entity% at location %location%");
 
-        registry.register(SyntaxRegistry.EFFECT,
-                SyntaxInfo.builder(MakePlayerCastSkill.class)
-                        .addPattern("make player %entity% cast skill %string% with trigger %entity% at entity %entity% with delay %number% and repeat %number%")
-                        .addPattern("make player %entity% cast skill %string% with trigger %entity% at location %location% with delay %number% and repeat %number%")
-                        .addPattern("make player %entity% cast skill %string% with trigger %entity% at self with delay %number% and repeat %number%")
-                        .build());
+        eff(registry, MakePlayerCastSkill.class,
+                "make player %entity% cast skill %string% with trigger %entity% at entity %entity% with delay %number% and repeat %number%",
+                "make player %entity% cast skill %string% with trigger %entity% at location %location% with delay %number% and repeat %number%",
+                "make player %entity% cast skill %string% with trigger %entity% at self with delay %number% and repeat %number%");
 
-        registry.register(SyntaxRegistry.EFFECT,
-                SyntaxInfo.builder(ModThreatofEntity.class)
-                        .addPattern("inc threat of %entity% by %number% from activemob %activemob%")
-                        .addPattern("dec threat of %entity% by %number% from activemob %activemob%")
-                        .build());
+        eff(registry, ModThreatofEntity.class,
+                "inc threat of %entity% by %number% from activemob %activemob%",
+                "dec threat of %entity% by %number% from activemob %activemob%");
 
         eff(registry, RemoveThreatEntity.class,  "remove threat of %entity% from activemob %activemob%");
         eff(registry, ClearThreatTable.class,    "clear threattable of activemob %activemob%");
@@ -268,32 +256,24 @@ public class MythicSkriptModule implements AddonModule {
         eff(registry, SetAttackSpeed.class,      "set attackspeed of activemob %activemob% to %number%");
         eff(registry, SetFollowRange.class,      "set followrange of activemob %activemob% to %number%");
 
-        registry.register(SyntaxRegistry.EFFECT,
-                SyntaxInfo.builder(TriggerSkill.class)
-                        .addPattern("trigger %string% for activemob %activemob%")
-                        .addPattern("trigger %string% for activemob %activemob% with triggerentity %entity%")
-                        .build());
+        eff(registry, TriggerSkill.class,
+                "trigger %string% for activemob %activemob%",
+                "trigger %string% for activemob %activemob% with triggerentity %entity%");
 
         eff(registry, RemoveMythicFromEntity.class, "remove mythic from activemob %activemob%");
 
         // --- MythicSpawner ---
-        registry.register(SyntaxRegistry.EFFECT,
-                SyntaxInfo.builder(ActivateMythicSpawner.class)
-                        .addPattern("activate mythicspawner %mythicspawner%")
-                        .addPattern("deactivate mythicspawner %mythicspawner%")
-                        .build());
+        eff(registry, ActivateMythicSpawner.class,
+                "activate mythicspawner %mythicspawner%",
+                "deactivate mythicspawner %mythicspawner%");
 
-        registry.register(SyntaxRegistry.EFFECT,
-                SyntaxInfo.builder(CooldownMythicSpawner.class)
-                        .addPattern("set cooldown of mythicspawner %mythicspawner% to %number%")
-                        .addPattern("set remainingcooldown of mythicspawner %mythicspawner% to %number%")
-                        .build());
+        eff(registry, CooldownMythicSpawner.class,
+                "set cooldown of mythicspawner %mythicspawner% to %number%",
+                "set remainingcooldown of mythicspawner %mythicspawner% to %number%");
 
-        registry.register(SyntaxRegistry.EFFECT,
-                SyntaxInfo.builder(WarmupMythicSpawner.class)
-                        .addPattern("set warmup of mythicspawner %mythicspawner% to %number%")
-                        .addPattern("set remainingwarmup of mythicspawner %mythicspawner% to %number%")
-                        .build());
+        eff(registry, WarmupMythicSpawner.class,
+                "set warmup of mythicspawner %mythicspawner% to %number%",
+                "set remainingwarmup of mythicspawner %mythicspawner% to %number%");
 
         eff(registry, SetMobTypeOfSpawner.class,  "set mobtype of mythicspawner %mythicspawner% to %string%");
         eff(registry, SetMovLevelofSpawner.class, "set moblevel of mythicspawner %mythicspawner% to %number%");
@@ -304,11 +284,9 @@ public class MythicSkriptModule implements AddonModule {
         eff(registry, SetPhysicalLootForLootBag.class, "set [physical] loot [for] [lootbag] %lootbag% to [(%-itemstack%|%-itemstacks%)]");
         eff(registry, SetOtherLootForLootBag.class,    "set [other] loot [for] [lootbag] %lootbag% to [(%-string%|%-strings%)]");
 
-        registry.register(SyntaxRegistry.EFFECT,
-                SyntaxInfo.builder(RemoveMobItem.class)
-                        .addPattern("remove mobitem %mobitem% from mobdrop %mobdrop%")
-                        .addPattern("clear mobdrop %mobdrop%")
-                        .build());
+        eff(registry, RemoveMobItem.class,
+                "remove mobitem %mobitem% from mobdrop %mobdrop%",
+                "clear mobdrop %mobdrop%");
 
         eff(registry, ChangeMaterialOfMobItem.class, "set material of mobitem %mobitem% to %string%");
         eff(registry, AddItemToMobDrop.class,        "add item %itemstack% to mobdrop %mobdrop%");
@@ -543,9 +521,10 @@ public class MythicSkriptModule implements AddonModule {
     }
 
     private <E extends ch.njol.skript.lang.Effect>
-    void eff(SyntaxRegistry registry, Class<E> cls, String pattern) {
-        registry.register(SyntaxRegistry.EFFECT,
-                SyntaxInfo.builder(cls).addPattern(pattern).build());
+    void eff(SyntaxRegistry registry, Class<E> cls, String... patterns) {
+        var builder = SyntaxInfo.builder(cls);
+        for (String p : patterns) builder.addPattern(p);
+        registry.register(SyntaxRegistry.EFFECT, builder.build());
     }
 
     private <E extends ch.njol.skript.lang.Expression<T>, T>
