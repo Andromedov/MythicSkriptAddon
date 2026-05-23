@@ -9,22 +9,21 @@ import io.lumine.mythic.api.skills.conditions.ILocationCondition;
 import io.lumine.mythic.bukkit.BukkitAdapter;
 
 public class LocationCondition extends Condition implements ILocationCondition {
-	
 	public LocationCondition(String line, MythicLineConfig mlc,Function<?>f) {
 		super(line,mlc,f);
-		
 		parameters=new Object[1][];
-
 	}
 
 	@Override
+	@SuppressWarnings({"removal"})
 	public boolean check(AbstractLocation aLocation) {
 		parameters[0]=new Location[]{BukkitAdapter.adapt(aLocation)};
-		Object[]result=function.execute(parameters);
-		if(result!=null&&(result[0] instanceof Boolean)) {
-			return (boolean)result[0];
+
+		Object[] result = function.execute(parameters);
+
+		if(result != null && result.length > 0 && (result[0] instanceof Boolean)) {
+			return (boolean) result[0];
 		}
 		return false;
 	}
-
 }

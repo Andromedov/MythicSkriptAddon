@@ -8,21 +8,21 @@ import io.lumine.mythic.api.config.MythicLineConfig;
 import io.lumine.mythic.api.skills.conditions.IEntityCondition;
 
 public class EntityCondition extends Condition implements IEntityCondition {
-	
 	public EntityCondition(String line, MythicLineConfig mlc, Function<?>f) {
 		super(line,mlc,f);
-		
 		parameters=new Object[1][];
 	}
 
 	@Override
+	@SuppressWarnings({"removal"})
 	public boolean check(AbstractEntity aEntity) {
 		parameters[0]=new Entity[] {aEntity.getBukkitEntity()};
-		Object[]result=function.execute(parameters);
-		if(result!=null&&(result[0] instanceof Boolean)) {
-			return (boolean)result[0];
+
+		Object[] result = function.execute(parameters);
+
+		if(result != null && result.length > 0 && (result[0] instanceof Boolean)) {
+			return (boolean) result[0];
 		}
 		return false;
 	}
-
 }

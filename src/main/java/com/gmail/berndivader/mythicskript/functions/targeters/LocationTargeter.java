@@ -14,31 +14,30 @@ import io.lumine.mythic.bukkit.BukkitAdapter;
 import io.lumine.mythic.core.skills.targeters.ILocationSelector;
 
 public class LocationTargeter extends ILocationSelector {
-	
 	Function<?>function;
 	Object[][]parameters;
-	
+
 	public LocationTargeter(MythicLineConfig mlc,Function<?>f) {
 		super(Utils.mythicMobs.getSkillManager(),mlc);
-		
+
 		function=f;
 		parameters=new Object[1][];
-		
 	}
 
 	@Override
+	@SuppressWarnings({"removal"})
 	public HashSet<AbstractLocation> getLocations(SkillMetadata data) {
-		
 		parameters[0]=new SkillMetadata[] {data};
-		Object[]result=function.execute(parameters);
+		Object[] result = function.execute(parameters);
 		HashSet<AbstractLocation>targets=new HashSet<>();
-		if(result!=null) {
-			for(int i1=0;i1<result.length;i1++) {
-				targets.add(BukkitAdapter.adapt((Location)result[i1]));
-			}
+
+		if(result != null) {
+            for (Object o : result) {
+                if (o instanceof Location) {
+                    targets.add(BukkitAdapter.adapt((Location) o));
+                }
+            }
 		}
 		return targets;
-		
 	}
-	
 }

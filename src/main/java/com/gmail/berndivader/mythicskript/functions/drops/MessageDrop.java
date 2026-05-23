@@ -9,28 +9,28 @@ import io.lumine.mythic.api.drops.IMessagingDrop;
 import io.lumine.mythic.core.drops.Drop;
 
 public class MessageDrop extends Drop implements IMessagingDrop {
-	
 	Function<?>function;
 	Object[][]parameters;
 
 	public MessageDrop(String line, MythicLineConfig mlc, Function<?>f) {
 		super(line,mlc);
-		
+
 		function=f;
 		parameters=new Object[2][];
-		
 	}
 
 	@Override
 	@Nullable
+	@SuppressWarnings({"deprecation", "removal"})
 	public String getRewardMessage(DropMetadata data, double value) {
 		parameters[0]=new DropMetadata[] {data};
 		parameters[1]=new Double[] {value};
-		Object[]result=function.execute(parameters);
-		if(result!=null&&(result[0] instanceof String)) {
-			return (String)result[0];
+
+		Object[] result = function.execute(parameters);
+
+		if(result != null && result.length > 0 && (result[0] instanceof String)) {
+			return (String) result[0];
 		}
 		return null;
 	}
-
 }

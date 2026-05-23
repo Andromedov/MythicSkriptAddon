@@ -13,28 +13,27 @@ import io.lumine.mythic.bukkit.BukkitAdapter;
 import io.lumine.mythic.core.drops.Drop;
 
 public class ItemDrop extends Drop implements IItemDrop {
-	
 	Function<?>function;
 	Object[][]parameters;
 
 	public ItemDrop(String line, MythicLineConfig mlc, Function<?>f) {
 		super(line, mlc);
-		
 		function=f;
 		parameters=new Object[2][];
-		
 	}
 
 	@Override
 	@Nullable
+	@SuppressWarnings({"removal"})
 	public AbstractItemStack getDrop(DropMetadata data, double amount) {
 		parameters[0]=new DropMetadata[] {data};
-		parameters[0]=new Number[] {amount};
-		Object[]result=function.execute(parameters);
-		if(result!=null&&(result[0] instanceof ItemStack)) {
-			return BukkitAdapter.adapt((ItemStack)result[0]);
+		parameters[1]=new Number[] {amount};
+
+		Object[] result = function.execute(parameters);
+
+		if(result != null && result.length > 0 && (result[0] instanceof ItemStack)) {
+			return BukkitAdapter.adapt((ItemStack) result[0]);
 		}
 		return null;
 	}
-
 }

@@ -11,13 +11,12 @@ import io.lumine.mythic.api.skills.conditions.IEntityLocationComparisonCondition
 import io.lumine.mythic.bukkit.BukkitAdapter;
 
 public class CompareEntityLocationCondition extends Condition implements IEntityLocationComparisonCondition {
-	
 	int entityPos,locationPos;
-	
+
 	public CompareEntityLocationCondition(String line, MythicLineConfig mlc, Function<?>f, boolean para0) {
 		super(line,mlc,f);
-		parameters=new Object[1][];
-		
+		parameters=new Object[2][];
+
 		if(para0) {
 			entityPos=0;
 			locationPos=1;
@@ -25,18 +24,19 @@ public class CompareEntityLocationCondition extends Condition implements IEntity
 			locationPos=0;
 			entityPos=1;
 		}
-		
 	}
 
 	@Override
+	@SuppressWarnings({"removal"})
 	public boolean check(AbstractEntity aCaster, AbstractLocation aTarget) {
 		parameters[entityPos]=new Entity[] {aCaster.getBukkitEntity()};
 		parameters[locationPos]=new Location[] {BukkitAdapter.adapt(aTarget)};
-		Object[]result=function.execute(parameters);
-		if(result!=null&&(result[0] instanceof Boolean)) {
-			return (boolean)result[0];
+
+		Object[] result = function.execute(parameters);
+
+		if(result != null && result.length > 0 && (result[0] instanceof Boolean)) {
+			return (boolean) result[0];
 		}
 		return false;
 	}
-
 }

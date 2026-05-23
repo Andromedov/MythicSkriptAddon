@@ -14,31 +14,30 @@ import io.lumine.mythic.bukkit.BukkitAdapter;
 import io.lumine.mythic.core.skills.targeters.IEntitySelector;
 
 public class EntityTargeter extends IEntitySelector {
-	
 	Function<?>function;
 	Object[][]parameters;
-	
+
 	public EntityTargeter(MythicLineConfig mlc,Function<?>f) {
 		super(Utils.mythicMobs.getSkillManager(),mlc);
-		
+
 		function=f;
 		parameters=new Object[1][];
-		
 	}
 
 	@Override
+	@SuppressWarnings({"removal"})
 	public HashSet<AbstractEntity> getEntities(SkillMetadata data) {
-		
 		parameters[0]=new SkillMetadata[] {data};
-		Object[]result=function.execute(parameters);
+		Object[] result = function.execute(parameters);
 		HashSet<AbstractEntity>targets=new HashSet<>();
-		if(result!=null) {
-			for(int i1=0;i1<result.length;i1++) {
-				targets.add(BukkitAdapter.adapt((Entity)result[i1]));
-			}
+
+		if (result != null) {
+            for (Object o : result) {
+                if (o instanceof Entity) {
+                    targets.add(BukkitAdapter.adapt((Entity) o));
+                }
+            }
 		}
 		return targets;
-		
 	}
-	
 }
