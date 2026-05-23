@@ -1,0 +1,44 @@
+package me.andromedov.mythicskript.effects;
+
+import org.jetbrains.annotations.Nullable;
+
+import org.bukkit.attribute.AttributeInstance;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.event.Event;
+
+import ch.njol.skript.lang.Effect;
+import ch.njol.skript.lang.Expression;
+import ch.njol.skript.lang.SkriptParser.ParseResult;
+import ch.njol.util.Kleenean;
+import io.lumine.mythic.core.mobs.ActiveMob;
+
+public class SetArmor extends Effect {
+	private Expression<Number> amount;
+	private Expression<ActiveMob> activeMob;
+
+	@SuppressWarnings("unchecked")
+	@Override
+	public boolean init(Expression<?>[] expr, int var2, Kleenean var3, ParseResult var4) {
+		this.activeMob = (Expression<ActiveMob>) expr[0];
+		this.amount = (Expression<Number>) expr[1];
+		return true;
+	}
+
+	@Override
+	public String toString(@Nullable Event e, boolean var2) {
+		return "set armor of activemob";
+	}
+
+	@Override
+	protected void execute(Event e) {
+		ActiveMob am = this.activeMob.getSingle(e);
+		if (am == null || !am.getEntity().isLiving()) return;
+
+		double val = this.amount.getSingle(e).doubleValue();
+		LivingEntity le = (LivingEntity) am.getEntity().getBukkitEntity();
+
+		AttributeInstance ai = le.getAttribute(Attribute.ARMOR);
+		if (ai != null) ai.setBaseValue(val);
+	}
+}
