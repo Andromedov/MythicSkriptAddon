@@ -1,0 +1,164 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    if: "contains(github.event.head_commit.message, '[release]') || contains(github.event.head_commit.message, '[pre-release]')"
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      do_release: ${{ steps.parse.outputs.do_release }}
+      version_tag: ${{ steps.parse.outputs.version_tag }}
+      is_prerelease: ${{ steps.parse.outputs.is_prerelease }}
+      changelog: ${{ steps.get_pr_body.outputs.changelog }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Parse Commit Message
+        id: parse
+        run: |
+          COMMIT_MSG=$(git log -1 --pretty=%B)
+          echo "Latest commit: $COMMIT_MSG"
+          
+          DO_RELEASE="false"
+          IS_PRERELEASE="false"
+          VERSION=""
+
+          if [[ $COMMIT_MSG == *"[release]"* ]]; then
+            DO_RELEASE="true"
+            VERSION=$(echo "$COMMIT_MSG" | sed -n 's/.*\[release\] \(v[0-9.]\+\).*/\1/p')
+          elif [[ $COMMIT_MSG == *"[pre-release]"* ]]; then
+            DO_RELEASE="true"
+            IS_PRERELEASE="true"
+            VERSION=$(echo "$COMMIT_MSG" | sed -n 's/.*\[pre-release\] \(v[0-9.]\+.*\).*/\1/p')
+          fi
+
+          echo "do_release=$DO_RELEASE" >> $GITHUB_OUTPUT
+          echo "is_prerelease=$IS_PRERELEASE" >> $GITHUB_OUTPUT
+          echo "version_tag=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Get Changelog from PR
+        id: get_pr_body
+        if: steps.parse.outputs.do_release == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TARGET_USER: "Andromedov"
+        run: |
+          PR_NUMBER=$(gh pr list --search "${{ github.sha }}" --state merged --json number --jq '.[0].number')
+          
+          if [ -z "$PR_NUMBER" ] || [ "$PR_NUMBER" == "null" ]; then
+            echo "No PR found for commit ${{ github.sha }}"
+            CHANGELOG="No changelog found."
+          else
+            echo "Found PR #$PR_NUMBER"
+          
+            CHANGELOG=$(gh pr view $PR_NUMBER --json comments --jq ".comments[] | select(.author.login == \"$TARGET_USER\" and (.body | contains(\"📦 MythicSkriptAddon\") and contains(\"Changelog\"))) | .body" | tail -n 1)
+          
+            if [ -z "$CHANGELOG" ]; then
+              echo "Not found in comments by $TARGET_USER, checking PR description..."
+              CHANGELOG=$(gh pr view $PR_NUMBER --json body,author --jq "select(.author.login == \"$TARGET_USER\" and (.body | contains(\"📦 MythicSkriptAddon\") and contains(\"Changelog\"))) | .body")
+            fi
+          
+            if [ -z "$CHANGELOG" ]; then
+                echo "DEBUG: Valid changelog by user $TARGET_USER not found."
+                CHANGELOG="Changelog not detected from user $TARGET_USER in PR #$PR_NUMBER."
+            fi
+          fi
+          
+          {
+            echo "changelog<<EOF"
+            echo "$CHANGELOG"
+            echo "EOF"
+          } >> $GITHUB_OUTPUT
+
+      - name: Set up Java 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Make gradlew executable
+        run: chmod +x gradlew
+
+      - name: Build project
+        run: ./gradlew build --no-daemon
+
+      - name: Filter main artifact
+        id: filter
+        run: |
+          mkdir -p release-artifact
+          cd build/libs
+          for file in *.jar; do
+            if [[ "$file" != *"-plain.jar"* && "$file" != *"-sources.jar"* && "$file" != *"-javadoc.jar"* ]]; then
+              FINAL_NAME="$file"
+
+              if [[ "${{ steps.parse.outputs.is_prerelease }}" == "true" ]]; then
+                BASENAME="${file%.jar}"
+                BASENAME="${BASENAME%-SNAPSHOT}"
+                FINAL_NAME="${BASENAME}-SNAPSHOT.jar"
+              fi
+
+              cp "$file" "../../release-artifact/$FINAL_NAME"
+              echo "Prepared artifact: $FINAL_NAME"
+            fi
+          done
+
+      - name: Upload Release Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-artifact
+          path: release-artifact/*.jar
+          retention-days: 1
+
+  publish:
+    needs: build
+    if: needs.build.outputs.do_release == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Download Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: release-artifact
+          path: release-artifact
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ needs.build.outputs.version_tag }}
+          name: Release ${{ needs.build.outputs.version_tag }}
+          body: ${{ needs.build.outputs.changelog }}
+          prerelease: ${{ needs.build.outputs.is_prerelease }}
+          files: release-artifact/*.jar
+
+      - name: Publish to Modrinth
+        if: needs.build.outputs.is_prerelease == 'false'
+        uses: Kira-NT/mc-publish@v3.3.0
+        with:
+          modrinth-id: "62Xr9WQ6"
+          modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
+          name: ${{ needs.build.outputs.version_tag }}
+          version: ${{ needs.build.outputs.version_tag }}
+          version-type: ${{ needs.build.outputs.is_prerelease == 'true' && 'beta' || 'release' }}
+          changelog: ${{ needs.build.outputs.changelog }}
+          files: release-artifact/*.jar
+          loaders: |
+            paper
+            purpur
+          game-versions: |
+            >=1.21.1 <=26.1.2
+          dependencies: |
+            mythicmobs(required){modrinth:NLuc7Jjh}
+            skript(required){modrinth:xFNYAvMk}

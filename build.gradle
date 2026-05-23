@@ -1,24 +1,40 @@
 plugins {
-	id "java"
+    id 'java'
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
 }
 
+group = 'me.andromedov'
+version = "${version}"
+
 repositories {
-	mavenCentral()
-    maven {url "https://berndivader.pii.at/archiva/repository/public/"}
-    maven {url "https://jitpack.io"}
-    maven {url "https://mvn.lumine.io/repository/maven-public/"}   
-	maven {url "https://oss.sonatype.org/content/repositories/snapshots"}
- 	maven {url "https://oss.sonatype.org/content/repositories/central"}    
+    mavenCentral()
+
+    // Paper
+    maven { url = 'https://repo.papermc.io/repository/maven-public/' }
+
+    // Skript
+    maven { url = 'https://repo.skriptlang.org/releases' }
+
+    // MythicMobs
+    maven { url = 'https://mvn.lumine.io/repository/maven-public/' }
+
+    // CodeMC
+    maven { url = 'https://repo.codemc.io/repository/maven-public/' }
 }
 
 dependencies {
-	implementation "org.spigotmc:spigot-api:1.19.4-R0.1-SNAPSHOT"
-    implementation "io.lumine:Mythic-Dist:5.5.1"
-    implementation "com.github.SkriptLang:Skript:2.8.2"
+    // Paper API — compileOnly
+    compileOnly "io.papermc.paper:paper-api:${paperVersion}"
+
+    // Skript 2.15.2 — compileOnly
+    compileOnly "com.github.SkriptLang:Skript:${skriptVersion}"
+
+    // MythicMobs 5.12.0 — compileOnly
+    compileOnly "io.lumine:Mythic-Dist:${mythicMobsVersion}"
 }
 
 java {
-    toolchain.languageVersion.set(JavaLanguageVersion.of(16))
+    toolchain.languageVersion.set(JavaLanguageVersion.of("${javaVersion}"))
 }
 
 processResources {
@@ -36,7 +52,7 @@ processResources {
     }
     else
     {
-    	project.version = "0.00.0"
+    	project.version = "1.0.0"
         println("Warning! gradle.properties file is missing!")
     }
     

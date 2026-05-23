@@ -1,5 +1,7 @@
 name: MythicSkriptAddon
-main: com.gmail.berndivader.mythicskript.MythicSkript
+main: me.andromedov.mythicskript.MythicSkript
 version: ${version}
-api-version: 1.13
+authors: ["Andromedov", "BerndiVader"]
+api-version: 1.21
 depend: [MythicMobs, Skript]
+description: Skript Addon to add MythicMobs support
