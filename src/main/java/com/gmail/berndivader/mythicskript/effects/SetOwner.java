@@ -1,5 +1,6 @@
 package com.gmail.berndivader.mythicskript.effects;
 
+import java.util.Objects;
 import java.util.UUID;
 
 import org.jetbrains.annotations.Nullable;
@@ -35,8 +36,9 @@ public class SetOwner extends Effect {
 
 	@Override
 	public String toString(@Nullable Event e, boolean var2) {
-		return getClass().getSimpleName()+e!=null?"@"+e.getEventName():"";
-	}
+        assert e != null;
+        return "@"+e.getEventName();
+    }
 
 	@Override
 	protected void execute(Event e) {
@@ -45,7 +47,7 @@ public class SetOwner extends Effect {
 		UUID uuid;
 		if (byUUID) {
 			try {
-				uuid = UUID.fromString(skriptUUID.getSingle(e));
+				uuid = UUID.fromString(Objects.requireNonNull(skriptUUID.getSingle(e)));
 			} catch (ExceptionInInitializerError ex) {
 				Skript.warning("Set owner for uuid "+skriptUUID.getSingle(e)+" wrong!");
 				return;

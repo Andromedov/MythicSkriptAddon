@@ -47,7 +47,7 @@ A comprehensive list of expressions, effects, events, and a detailed guide
 on working with `skfunction` can be found on our [Wiki page](https://github.com/Andromedov/MythicSkriptAddon/wiki).
 
 ## 📜 Changelog
-All changes, updates to new API versions, and bug fixes are documented in the [CHANGELOG.md]() file.
+All changes, updates to new API versions, and bug fixes are documented in the [CHANGELOG.md](CHANGELOG.md) file.
 
 ## 📄 License
 This project is licensed under the [Apache License 2.0](LICENSE).
