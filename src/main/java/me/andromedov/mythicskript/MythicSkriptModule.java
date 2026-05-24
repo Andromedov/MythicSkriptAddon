@@ -297,6 +297,10 @@ public class MythicSkriptModule implements AddonModule {
 
         eff(registry, RemoveMythicFromEntity.class, "remove mythic from activemob %activemob%");
 
+        // --- MythicItem ---
+        eff(registry, GiveMythicItem.class, "give mythic[ ]item %string% [with amount %-number%] to %players%");
+        eff(registry, DropMythicItem.class, "drop mythic[ ]item %string% [with amount %-number%] at %locations%");
+
         // --- MythicSpawner ---
         eff(registry, ActivateMythicSpawner.class,
                 "activate mythicspawner %mythicspawner%",
