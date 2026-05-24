@@ -4,6 +4,7 @@ import me.andromedov.mythicskript.classes.MobItem;
 import me.andromedov.mythicskript.classes.MythicDrops;
 import me.andromedov.mythicskript.conditions.*;
 import me.andromedov.mythicskript.conditions.mythicitem.IsSpecificMythicItem;
+import me.andromedov.mythicskript.conditions.mythicitem.PlayerHasMythicItem;
 import me.andromedov.mythicskript.effects.*;
 import me.andromedov.mythicskript.effects.mobitems.*;
 import me.andromedov.mythicskript.effects.mythicspawner.*;
@@ -41,6 +42,7 @@ import me.andromedov.mythicskript.effects.*;
 import me.andromedov.mythicskript.effects.conditions.SetConditionMeet;
 import me.andromedov.mythicskript.effects.dropmetadata.SetAmount;
 import me.andromedov.mythicskript.effects.mobitems.*;
+import me.andromedov.mythicskript.effects.mythicitem.*;
 import me.andromedov.mythicskript.effects.mythicspawner.*;
 import me.andromedov.mythicskript.events.BukkitEvents;
 import me.andromedov.mythicskript.events.skript.*;
@@ -242,6 +244,9 @@ public class MythicSkriptModule implements AddonModule {
 
         cond(registry, IsSpecificMythicItem.class,
                 "%itemstack% is [a ]mythic[ ]item %string%");
+
+        cond(registry, PlayerHasMythicItem.class,
+                "%player% has mythic[ ]item %string% [with amount %-number%]");
     }
 
     private void registerEffects(SyntaxRegistry registry) {
