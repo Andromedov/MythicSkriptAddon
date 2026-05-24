@@ -3,6 +3,7 @@ package me.andromedov.mythicskript;
 import me.andromedov.mythicskript.classes.MobItem;
 import me.andromedov.mythicskript.classes.MythicDrops;
 import me.andromedov.mythicskript.conditions.*;
+import me.andromedov.mythicskript.conditions.mythicitem.IsSpecificMythicItem;
 import me.andromedov.mythicskript.effects.*;
 import me.andromedov.mythicskript.effects.mobitems.*;
 import me.andromedov.mythicskript.effects.mythicspawner.*;
@@ -19,6 +20,7 @@ import me.andromedov.mythicskript.expressions.drops.GetLootBagItems;
 import me.andromedov.mythicskript.expressions.drops.GetLootBagOthers;
 import me.andromedov.mythicskript.expressions.event.*;
 import me.andromedov.mythicskript.expressions.mythicitem.GetMythicItemByName;
+import me.andromedov.mythicskript.expressions.mythicitem.GetMythicTypeOfItem;
 import me.andromedov.mythicskript.expressions.mythicitem.ItemStackForMythicItemByName;
 import me.andromedov.mythicskript.expressions.mythicitem.MakeMythicItemReal;
 import me.andromedov.mythicskript.expressions.mythicmob.GetAllMythicMobs;
@@ -236,7 +238,10 @@ public class MythicSkriptModule implements AddonModule {
                 "activemob %activemob% has immunitytable");
 
         cond(registry, ItemStackisMythicItem.class,
-                "%itemstack% is [a ]mythicitem");
+                "%itemstack% is [a ]mythic[ ]item");
+
+        cond(registry, IsSpecificMythicItem.class,
+                "%itemstack% is [a ]mythic[ ]item %string%");
     }
 
     private void registerEffects(SyntaxRegistry registry) {
