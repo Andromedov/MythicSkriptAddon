@@ -13,7 +13,7 @@ import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.util.Kleenean;
 
 public class ItemStackisMythicItem extends Condition {
-	
+
 	Expression<ItemStack>expr;
 
 	@SuppressWarnings("unchecked")
@@ -25,12 +25,16 @@ public class ItemStackisMythicItem extends Condition {
 
 	@Override
 	public String toString(@Nullable Event e, boolean debug) {
-		return getClass().getSimpleName()+e!=null?"@"+e.getEventName():"";
+        assert e != null;
+        return "@"+e.getEventName();
 	}
 
 	@Override
 	public boolean check(Event event) {
-		return Utils.VCH.getItemHandler().getNBTData(expr.getSingle(event)).containsKey("MYTHIC_TYPE");
-	}
+		ItemStack item = expr.getSingle(event);
+		if (item == null) return false;
 
+		String mythicType = Utils.itemManager.getMythicTypeFromItem(item);
+		return mythicType != null;
+	}
 }
