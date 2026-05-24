@@ -1,17 +1,11 @@
 package me.andromedov.mythicskript.effects.mythicitem;
 
 import java.util.Objects;
-import java.util.Optional;
-
 import javax.annotation.Nullable;
 
 import org.bukkit.Location;
 import org.bukkit.event.Event;
 import org.bukkit.inventory.ItemStack;
-
-import io.lumine.mythic.bukkit.BukkitAdapter;
-import io.lumine.mythic.core.items.MythicItem;
-import me.andromedov.mythicskript.Utils;
 
 import ch.njol.skript.lang.Effect;
 import ch.njol.skript.lang.Expression;
@@ -39,8 +33,8 @@ public class DropMythicItem extends Effect {
 
     @Override
     protected void execute(Event event) {
-        String mythicName = itemTypeExpr.getSingle(event);
         Location[] locations = locationsExpr.getAll(event);
+        String mythicName = itemTypeExpr.getSingle(event);
 
         if (mythicName == null || locations == null || locations.length == 0) return;
 
@@ -48,10 +42,8 @@ public class DropMythicItem extends Effect {
                 ? Objects.requireNonNull(amountExpr.getSingle(event)).intValue()
                 : 1;
 
-        Optional<MythicItem> optMythicItem = Utils.itemManager.getItem(mythicName);
-        if (optMythicItem.isEmpty()) return;
-
-        ItemStack item = BukkitAdapter.adapt(optMythicItem.get().generateItemStack(amount));
+        ItemStack item = MythicItemHelper.getGeneratedItem(mythicName, amount);
+        if (item == null) return;
 
         for (Location loc : locations) {
             if (loc != null && loc.getWorld() != null) {
