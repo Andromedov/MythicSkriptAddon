@@ -304,6 +304,7 @@ public class MythicSkriptModule implements AddonModule {
         // --- MythicItem ---
         eff(registry, GiveMythicItem.class, "give mythic[ ]item %string% [with amount %-number%] to %players%");
         eff(registry, DropMythicItem.class, "drop mythic[ ]item %string% [with amount %-number%] at %locations%");
+        eff(registry, TakeMythicItem.class, "take [amount %-number%] mythic[ ]item %string% from %players%");
 
         // --- MythicSpawner ---
         eff(registry, ActivateMythicSpawner.class,
