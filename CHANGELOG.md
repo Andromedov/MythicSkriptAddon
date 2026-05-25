@@ -13,6 +13,7 @@ All notable changes to this project will be documented in this file.
 - New condition: `%itemstack% is[n't] [a ]mythic[ ]item %string%` — checks if an item matches a specific mythic type.
 - New condition: `%player% (has|does(n't| not) have) mythic[ ]item %string% [with amount %-number%]` — checks if a player has enough of a specific mythic item.
 - Negation support (`isn't`, `does not have`) for all mythic item conditions.
+- Metrics: Added anonymous plugin tracking via [bStats](https://bstats.org/plugin/bukkit/MythicSkriptAddon/31569) to help monitor plugin usage and statistics.
 
 ### Changed
 - `ItemStackisMythicItem` migrated from legacy NBT access to `Utils.itemManager`, improved null safety.
