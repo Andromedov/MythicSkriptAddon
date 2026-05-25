@@ -1,12 +1,12 @@
 package me.andromedov.mythicskript.mythicitem;
 
 import java.util.Optional;
-
 import javax.annotation.Nullable;
 
 import org.bukkit.event.Event;
 import org.bukkit.inventory.ItemStack;
 
+import ch.njol.skript.Skript;
 import ch.njol.skript.lang.Expression;
 import io.lumine.mythic.bukkit.BukkitAdapter;
 import io.lumine.mythic.core.items.MythicItem;
@@ -25,6 +25,11 @@ public class MythicItemHelper {
         if (mythicName == null) return null;
 
         Optional<MythicItem> optMythicItem = Utils.itemManager.getItem(mythicName);
+        if (optMythicItem.isEmpty()) {
+            Skript.warning("MythicItem with the name of '" + mythicName + "' not found in MythicMobs files! Please check spelling.");
+            return null;
+        }
+
         return optMythicItem.map(mythicItem -> BukkitAdapter.adapt(mythicItem.generateItemStack(amount))).orElse(null);
     }
 
