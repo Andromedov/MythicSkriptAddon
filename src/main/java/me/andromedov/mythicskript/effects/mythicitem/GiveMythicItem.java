@@ -1,6 +1,7 @@
 package me.andromedov.mythicskript.effects.mythicitem;
 
-import java.util.Objects;
+import java.util.HashMap;
+
 import javax.annotation.Nullable;
 
 import org.bukkit.entity.Player;
@@ -38,15 +39,18 @@ public class GiveMythicItem extends Effect {
 
         if (players == null || players.length == 0 || mythicName == null) return;
 
-        int amount = (amountExpr != null && amountExpr.getSingle(event) != null)
-                ? Objects.requireNonNull(amountExpr.getSingle(event)).intValue()
-                : 1;
+        int amount = MythicItemHelper.getAmount(amountExpr, event);
 
         ItemStack item = MythicItemHelper.getGeneratedItem(mythicName, amount);
         if (item == null) return;
 
         for (Player p : players) {
-            p.getInventory().addItem(item.clone());
+            HashMap<Integer, ItemStack> leftovers = p.getInventory().addItem(item.clone());
+            if (!leftovers.isEmpty()) {
+                for (ItemStack leftoverItem : leftovers.values()) {
+                    p.getWorld().dropItemNaturally(p.getLocation(), leftoverItem);
+                }
+            }
         }
     }
 }

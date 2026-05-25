@@ -1,6 +1,5 @@
 package me.andromedov.mythicskript.effects.mythicitem;
 
-import java.util.Objects;
 import javax.annotation.Nullable;
 
 import org.bukkit.Location;
@@ -36,11 +35,9 @@ public class DropMythicItem extends Effect {
         Location[] locations = locationsExpr.getAll(event);
         String mythicName = itemTypeExpr.getSingle(event);
 
-        if (mythicName == null || locations == null || locations.length == 0) return;
+        if (locations == null || locations.length == 0 || mythicName == null) return;
 
-        int amount = (amountExpr != null && amountExpr.getSingle(event) != null)
-                ? Objects.requireNonNull(amountExpr.getSingle(event)).intValue()
-                : 1;
+        int amount = MythicItemHelper.getAmount(amountExpr, event);
 
         ItemStack item = MythicItemHelper.getGeneratedItem(mythicName, amount);
         if (item == null) return;
