@@ -414,6 +414,7 @@ public class MythicSkriptModule implements AddonModule {
                 "[get ]itemstack for %mythicitem%",
                 "[create ]itemstack for %mythicitem% with amount %number%");
         expr(registry, GetMythicTypeOfItem.class, String.class, "[the ]mythic[ ]type of %itemstack%");
+        expr(registry, GetAmountOfMythicItem.class, Number.class, "[the ]amount of mythic[ ]item %string% (in|of) %player%['s inventory]");
 
         // === MythicMob types ===
         expr(registry, GetAllMythicMobs.class,   MythicMob.class,   "all mythicmob types");
