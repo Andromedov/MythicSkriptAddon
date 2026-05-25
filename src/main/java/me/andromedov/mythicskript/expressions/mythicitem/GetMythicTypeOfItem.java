@@ -13,6 +13,7 @@ import ch.njol.skript.lang.util.SimpleExpression;
 import ch.njol.util.Kleenean;
 
 public class GetMythicTypeOfItem extends SimpleExpression<String> {
+
     private Expression<ItemStack> itemExpr;
 
     @Override
@@ -40,13 +41,13 @@ public class GetMythicTypeOfItem extends SimpleExpression<String> {
     @Override
     protected String[] get(Event event) {
         ItemStack item = itemExpr.getSingle(event);
-        if (item == null) return null;
+        if (item == null) return new String[0];
 
         String mythicType = Utils.itemManager.getMythicTypeFromItem(item);
         if (mythicType != null) {
             return new String[]{mythicType};
         }
 
-        return null;
+        return new String[0];
     }
 }
