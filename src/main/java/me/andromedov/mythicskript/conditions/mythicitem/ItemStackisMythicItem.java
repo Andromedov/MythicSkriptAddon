@@ -14,19 +14,18 @@ import ch.njol.util.Kleenean;
 
 public class ItemStackisMythicItem extends Condition {
 
-	Expression<ItemStack>expr;
+	Expression<ItemStack> expr;
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public boolean init(Expression<?>[] expressions, int matchedPattern, Kleenean isDelayed, ParseResult parseResult) {
-		expr=(Expression<ItemStack>) expressions[0];
+		expr = (Expression<ItemStack>) expressions[0];
 		return true;
 	}
 
 	@Override
 	public String toString(@Nullable Event e, boolean debug) {
-        assert e != null;
-        return "@"+e.getEventName();
+		return getClass().getSimpleName() + (e != null ? "@" + e.getEventName() : "");
 	}
 
 	@Override
