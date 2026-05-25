@@ -13,13 +13,13 @@ import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.skript.lang.util.SimpleExpression;
 import ch.njol.util.Kleenean;
 
-public class GetAmountOfMythicItem extends SimpleExpression<Number> {
+public class GetAmountOfMythicItem extends SimpleExpression<Integer> {
     private Expression<String> itemTypeExpr;
     private Expression<Player> playerExpr;
 
     @Override
-    public Class<? extends Number> getReturnType() {
-        return Number.class;
+    public Class<? extends Integer> getReturnType() {
+        return Integer.class;
     }
 
     @Override
@@ -41,11 +41,11 @@ public class GetAmountOfMythicItem extends SimpleExpression<Number> {
     }
 
     @Override
-    protected Number[] get(Event event) {
+    protected Integer[] get(Event event) {
         String mythicName = itemTypeExpr.getSingle(event);
         Player player = playerExpr.getSingle(event);
 
-        if (mythicName == null || player == null) return new Number[]{0};
+        if (mythicName == null || player == null) return new Integer[]{0};
 
         int count = 0;
         for (ItemStack item : player.getInventory().getContents()) {
@@ -57,6 +57,6 @@ public class GetAmountOfMythicItem extends SimpleExpression<Number> {
             }
         }
 
-        return new Number[]{count};
+        return new Integer[]{count};
     }
 }
