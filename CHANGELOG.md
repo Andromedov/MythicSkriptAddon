@@ -2,7 +2,25 @@
 
 All notable changes to this project will be documented in this file.
 
-## [1.0.0] - Current Update (2026-05-22 / 2026-05-23)
+## [1.1.0] – The Item Update (2026-05-25)
+
+### Added
+- New expression: `[the ]mythic[ ]type of %itemstack%` — retrieves the MythicMobs type name of an item.
+- New expression: `[the ]amount of mythic[ ]item %string% (in|of) %player%['s inventory]` — counts how many of a specific mythic item a player has.
+- New effect: `give mythic[ ]item %string% [with amount %-number%] to %players%` — gives a mythic item to one or more players (drops leftovers if inventory is full).
+- New effect: `drop mythic[ ]item %string% [with amount %-number%] at %locations%` — drops a mythic item at one or more locations.
+- New effect: `take [amount %-number%] mythic[ ]item %string% from %players%` — removes a specific mythic item from player inventories.
+- New condition: `%itemstack% is[n't] [a ]mythic[ ]item %string%` — checks if an item matches a specific mythic type.
+- New condition: `%player% (has|does(n't| not) have) mythic[ ]item %string% [with amount %-number%]` — checks if a player has enough of a specific mythic item.
+- Negation support (`isn't`, `does not have`) for all mythic item conditions.
+- Metrics: Added anonymous plugin tracking via [bStats](https://bstats.org/plugin/bukkit/MythicSkriptAddon/31569) to help monitor plugin usage and statistics.
+
+### Changed
+- `ItemStackisMythicItem` migrated from legacy NBT access to `Utils.itemManager`, improved null safety.
+- Introduced `MythicItemHelper` utility class to centralize item generation and amount parsing.
+- Added `Skript.warning()` when an unknown MythicItem name is used in effects.
+
+## [1.0.0] – The Initial Release (2026-05-22 / 2026-05-23)
 
 ### Added / Changed
 
@@ -13,7 +31,7 @@ All notable changes to this project will be documented in this file.
 * Fixed an argument overwriting bug in the `ItemDrop` class.
 * Created a [wiki page](https://github.com/Andromedov/MythicSkriptAddon/wiki) for the plugin.
 
-## [0.99.7] - 2024-04-12
+## [0.99.7] – 2024-04-12
 
 ### Fixed
 
@@ -23,7 +41,7 @@ All notable changes to this project will be documented in this file.
 
 * New effect: `set display of [activemob] %activemob% to %string%` to change a mob's display name.
 
-## [0.99.6] - 2024-02-29
+## [0.99.6] – 2024-02-29
 
 ### Fixed
 
@@ -34,7 +52,7 @@ All notable changes to this project will be documented in this file.
 
 * New class: `mythicplayer`.
 
-## [0.99.5] - 2024-02-09
+## [0.99.5] – 2024-02-09
 
 ### Changed
 
@@ -46,13 +64,13 @@ All notable changes to this project will be documented in this file.
 * Expressions: `[create ]itemstack for mythicitem [named ]%string%`, `[get ]mythicitem [for ]name %string%`, `[get ]itemstack for %mythicitem%`.
 * New event-value for the `on mythicmob lootdrop` event: `event-lootbag`.
 
-## [0.99.4] - 2024-01-31
+## [0.99.4] – 2024-01-31
 
 ### Fixed
 
 * Fixed `NPE` (NullPointerException) in all custom mechanics.
 
-## [0.99.3] - 2024-01-27
+## [0.99.3] – 2024-01-27
 
 ### Changed
 

@@ -3,6 +3,8 @@ package me.andromedov.mythicskript;
 import me.andromedov.mythicskript.classes.MobItem;
 import me.andromedov.mythicskript.classes.MythicDrops;
 import me.andromedov.mythicskript.conditions.*;
+import me.andromedov.mythicskript.conditions.mythicitem.IsSpecificMythicItem;
+import me.andromedov.mythicskript.conditions.mythicitem.PlayerHasMythicItem;
 import me.andromedov.mythicskript.effects.*;
 import me.andromedov.mythicskript.effects.mobitems.*;
 import me.andromedov.mythicskript.effects.mythicspawner.*;
@@ -19,8 +21,10 @@ import me.andromedov.mythicskript.expressions.drops.GetLootBagItems;
 import me.andromedov.mythicskript.expressions.drops.GetLootBagOthers;
 import me.andromedov.mythicskript.expressions.event.*;
 import me.andromedov.mythicskript.expressions.mythicitem.GetMythicItemByName;
+import me.andromedov.mythicskript.expressions.mythicitem.GetMythicTypeOfItem;
 import me.andromedov.mythicskript.expressions.mythicitem.ItemStackForMythicItemByName;
 import me.andromedov.mythicskript.expressions.mythicitem.MakeMythicItemReal;
+import me.andromedov.mythicskript.expressions.mythicitem.GetAmountOfMythicItem;
 import me.andromedov.mythicskript.expressions.mythicmob.GetAllMythicMobs;
 import me.andromedov.mythicskript.expressions.mythicmob.GetEntityType;
 import me.andromedov.mythicskript.expressions.mythicmob.GetMythicMobByName;
@@ -39,6 +43,7 @@ import me.andromedov.mythicskript.effects.*;
 import me.andromedov.mythicskript.effects.conditions.SetConditionMeet;
 import me.andromedov.mythicskript.effects.dropmetadata.SetAmount;
 import me.andromedov.mythicskript.effects.mobitems.*;
+import me.andromedov.mythicskript.effects.mythicitem.*;
 import me.andromedov.mythicskript.effects.mythicspawner.*;
 import me.andromedov.mythicskript.events.BukkitEvents;
 import me.andromedov.mythicskript.events.skript.*;
@@ -236,7 +241,16 @@ public class MythicSkriptModule implements AddonModule {
                 "activemob %activemob% has immunitytable");
 
         cond(registry, ItemStackisMythicItem.class,
-                "%itemstack% is [a ]mythicitem");
+                "%itemstack% is [a ]mythic[ ]item",
+                "%itemstack% is(n't| not) [a ]mythic[ ]item");
+
+        cond(registry, IsSpecificMythicItem.class,
+                "%itemstack% is [a ]mythic[ ]item %string%",
+                "%itemstack% is(n't| not) [a ]mythic[ ]item %string%");
+
+        cond(registry, PlayerHasMythicItem.class,
+                "%player% has mythic[ ]item %string% [with amount %-number%]",
+                "%player% does(n't| not) have mythic[ ]item %string% [with amount %-number%]");
     }
 
     private void registerEffects(SyntaxRegistry registry) {
@@ -286,6 +300,11 @@ public class MythicSkriptModule implements AddonModule {
                 "trigger %string% for activemob %activemob% with triggerentity %entity%");
 
         eff(registry, RemoveMythicFromEntity.class, "remove mythic from activemob %activemob%");
+
+        // --- MythicItem ---
+        eff(registry, GiveMythicItem.class, "give mythic[ ]item %string% [with amount %-number%] to %players%");
+        eff(registry, DropMythicItem.class, "drop mythic[ ]item %string% [with amount %-number%] at %locations%");
+        eff(registry, TakeMythicItem.class, "take [amount %-number%] mythic[ ]item %string% from %players%");
 
         // --- MythicSpawner ---
         eff(registry, ActivateMythicSpawner.class,
@@ -394,6 +413,8 @@ public class MythicSkriptModule implements AddonModule {
         expr(registry, MakeMythicItemReal.class, ItemStack.class,
                 "[get ]itemstack for %mythicitem%",
                 "[create ]itemstack for %mythicitem% with amount %number%");
+        expr(registry, GetMythicTypeOfItem.class, String.class, "[the ]mythic[ ]type of %itemstack%");
+        expr(registry, GetAmountOfMythicItem.class, Integer.class, "[the ]amount of mythic[ ]item %string% (in|of) %player%['s inventory]");
 
         // === MythicMob types ===
         expr(registry, GetAllMythicMobs.class,   MythicMob.class,   "all mythicmob types");

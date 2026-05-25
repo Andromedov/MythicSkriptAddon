@@ -35,6 +35,8 @@ public class MythicSkript extends JavaPlugin {
 			return;
 		}
 
+		org.bstats.bukkit.Metrics metrics = new org.bstats.bukkit.Metrics(this, 31569);
+
 		addon = ch.njol.skript.Skript.instance().registerAddon(MythicSkript.class, "MythicSkriptAddon");
 
 		addon.loadModules(new MythicSkriptModule());
