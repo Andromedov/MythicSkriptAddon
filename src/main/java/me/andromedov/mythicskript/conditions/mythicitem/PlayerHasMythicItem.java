@@ -7,7 +7,7 @@ import org.bukkit.event.Event;
 import org.bukkit.inventory.ItemStack;
 
 import me.andromedov.mythicskript.Utils;
-import me.andromedov.mythicskript.effects.mythicitem.MythicItemHelper;
+import me.andromedov.mythicskript.mythicitem.MythicItemHelper;
 
 import ch.njol.skript.lang.Condition;
 import ch.njol.skript.lang.Expression;

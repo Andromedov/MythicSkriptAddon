@@ -1,4 +1,4 @@
-package me.andromedov.mythicskript.effects.mythicitem;
+package me.andromedov.mythicskript.mythicitem;
 
 import java.util.Optional;
 
