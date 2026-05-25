@@ -7,13 +7,12 @@ import org.bukkit.event.Event;
 import org.bukkit.inventory.ItemStack;
 
 import me.andromedov.mythicskript.Utils;
+import me.andromedov.mythicskript.effects.mythicitem.MythicItemHelper;
 
 import ch.njol.skript.lang.Condition;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.util.Kleenean;
-
-import java.util.Objects;
 
 public class PlayerHasMythicItem extends Condition {
     private Expression<Player> playerExpr;
@@ -41,10 +40,7 @@ public class PlayerHasMythicItem extends Condition {
 
         if (player == null || mythicName == null) return false;
 
-        int requiredAmount = (amountExpr != null && amountExpr.getSingle(event) != null)
-                ? Objects.requireNonNull(amountExpr.getSingle(event)).intValue()
-                : 1;
-
+        int requiredAmount = MythicItemHelper.getAmount(amountExpr, event);
         int foundAmount = 0;
 
         for (ItemStack item : player.getInventory().getContents()) {
