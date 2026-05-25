@@ -40,8 +40,13 @@ java {
     toolchain.languageVersion.set(JavaLanguageVersion.of("${javaVersion}"))
 }
 
-shadowJar {
+tasks.named('shadowJar') {
     relocate 'org.bstats', "${project.group}.mythicskript.bstats"
+    archiveClassifier.set('')
+}
+
+tasks.named('jar') {
+    archiveClassifier.set('plain')
 }
 
 tasks.build {
