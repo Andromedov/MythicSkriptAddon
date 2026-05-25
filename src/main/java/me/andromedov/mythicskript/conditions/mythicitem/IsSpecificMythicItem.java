@@ -21,6 +21,7 @@ public class IsSpecificMythicItem extends Condition {
     public boolean init(Expression<?>[] expr, int matchedPattern, Kleenean isDelayed, ParseResult parseResult) {
         itemExpr = (Expression<ItemStack>) expr[0];
         nameExpr = (Expression<String>) expr[1];
+        setNegated(matchedPattern == 1);
         return true;
     }
 
@@ -34,11 +35,12 @@ public class IsSpecificMythicItem extends Condition {
         ItemStack item = itemExpr.getSingle(event);
         String requiredName = nameExpr.getSingle(event);
 
-        if (item == null || requiredName == null) return false;
+        if (item == null || requiredName == null) return isNegated();
 
         String mythicType = Utils.itemManager.getMythicTypeFromItem(item);
-        if (mythicType == null) return false;
+        if (mythicType == null) return isNegated();
 
-        return mythicType.equalsIgnoreCase(requiredName);
+        boolean isMatch = mythicType.equalsIgnoreCase(requiredName);
+        return isMatch ^ isNegated();
     }
 }

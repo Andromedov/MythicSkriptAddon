@@ -24,6 +24,7 @@ import me.andromedov.mythicskript.expressions.mythicitem.GetMythicItemByName;
 import me.andromedov.mythicskript.expressions.mythicitem.GetMythicTypeOfItem;
 import me.andromedov.mythicskript.expressions.mythicitem.ItemStackForMythicItemByName;
 import me.andromedov.mythicskript.expressions.mythicitem.MakeMythicItemReal;
+import me.andromedov.mythicskript.expressions.mythicitem.GetAmountOfMythicItem;
 import me.andromedov.mythicskript.expressions.mythicmob.GetAllMythicMobs;
 import me.andromedov.mythicskript.expressions.mythicmob.GetEntityType;
 import me.andromedov.mythicskript.expressions.mythicmob.GetMythicMobByName;
@@ -240,13 +241,16 @@ public class MythicSkriptModule implements AddonModule {
                 "activemob %activemob% has immunitytable");
 
         cond(registry, ItemStackisMythicItem.class,
-                "%itemstack% is [a ]mythic[ ]item");
+                "%itemstack% is [a ]mythic[ ]item",
+                "%itemstack% is(n't| not) [a ]mythic[ ]item");
 
         cond(registry, IsSpecificMythicItem.class,
-                "%itemstack% is [a ]mythic[ ]item %string%");
+                "%itemstack% is [a ]mythic[ ]item %string%",
+                "%itemstack% is(n't| not) [a ]mythic[ ]item %string%");
 
         cond(registry, PlayerHasMythicItem.class,
-                "%player% has mythic[ ]item %string% [with amount %-number%]");
+                "%player% has mythic[ ]item %string% [with amount %-number%]",
+                "%player% does(n't| not) have mythic[ ]item %string% [with amount %-number%]");
     }
 
     private void registerEffects(SyntaxRegistry registry) {

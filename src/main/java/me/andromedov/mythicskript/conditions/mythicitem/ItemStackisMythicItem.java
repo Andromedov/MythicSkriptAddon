@@ -14,12 +14,13 @@ import ch.njol.util.Kleenean;
 
 public class ItemStackisMythicItem extends Condition {
 
-	Expression<ItemStack> expr;
+	private Expression<ItemStack> expr;
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public boolean init(Expression<?>[] expressions, int matchedPattern, Kleenean isDelayed, ParseResult parseResult) {
 		expr = (Expression<ItemStack>) expressions[0];
+		setNegated(matchedPattern == 1);
 		return true;
 	}
 
@@ -31,9 +32,11 @@ public class ItemStackisMythicItem extends Condition {
 	@Override
 	public boolean check(Event event) {
 		ItemStack item = expr.getSingle(event);
-		if (item == null) return false;
+		if (item == null) return isNegated();
 
 		String mythicType = Utils.itemManager.getMythicTypeFromItem(item);
-		return mythicType != null;
+		boolean isMythic = mythicType != null;
+
+		return isMythic ^ isNegated();
 	}
 }

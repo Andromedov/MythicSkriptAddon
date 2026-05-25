@@ -25,6 +25,7 @@ public class PlayerHasMythicItem extends Condition {
         playerExpr = (Expression<Player>) expr[0];
         itemTypeExpr = (Expression<String>) expr[1];
         amountExpr = (Expression<Number>) expr[2];
+        setNegated(matchedPattern == 1);
         return true;
     }
 
@@ -38,7 +39,7 @@ public class PlayerHasMythicItem extends Condition {
         Player player = playerExpr.getSingle(event);
         String mythicName = itemTypeExpr.getSingle(event);
 
-        if (player == null || mythicName == null) return false;
+        if (player == null || mythicName == null) return isNegated();
 
         int requiredAmount = MythicItemHelper.getAmount(amountExpr, event);
         int foundAmount = 0;
@@ -50,11 +51,11 @@ public class PlayerHasMythicItem extends Condition {
             if (mythicType != null && mythicType.equalsIgnoreCase(mythicName)) {
                 foundAmount += item.getAmount();
                 if (foundAmount >= requiredAmount) {
-                    return true;
+                    return !isNegated();
                 }
             }
         }
 
-        return false;
+        return isNegated();
     }
 }
