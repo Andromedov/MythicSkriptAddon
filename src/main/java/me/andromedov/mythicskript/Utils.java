@@ -12,13 +12,12 @@ import io.lumine.mythic.core.spawning.spawners.SpawnerManager;
 
 public class Utils {
 
-	// Поля ініціалізуються один раз через init()
-	public static MythicBukkit        mythicMobs;
-	public static MobExecutor         mobManager;
-	public static ItemExecutor        itemManager;
-	public static BukkitAPIHelper     mythicHelper;
-	public static DropExecutor        dropExecutor;
-	public static SpawnerManager      spawnerManager;
+	public static MythicBukkit mythicMobs;
+	public static MobExecutor mobManager;
+	public static ItemExecutor itemManager;
+	public static BukkitAPIHelper mythicHelper;
+	public static DropExecutor dropExecutor;
+	public static SpawnerManager spawnerManager;
 	public static VolatileCodeHandler VCH;
 
 	private Utils() {}
@@ -27,13 +26,13 @@ public class Utils {
 	 * Initializes static managers and helpers for MythicMobs integration
 	 */
 	public static void init() {
-		mythicMobs     = MythicBukkit.inst();
-		mobManager     = mythicMobs.getMobManager();
-		itemManager    = mythicMobs.getItemManager();
-		mythicHelper   = mythicMobs.getAPIHelper();
-		dropExecutor   = mythicMobs.getDropManager();
+		mythicMobs = MythicBukkit.inst();
+		mobManager = mythicMobs.getMobManager();
+		itemManager = mythicMobs.getItemManager();
+		mythicHelper = mythicMobs.getAPIHelper();
+		dropExecutor = mythicMobs.getDropManager();
 		spawnerManager = mythicMobs.getSpawnerManager();
-		VCH            = mythicMobs.getVolatileCodeHandler();
+		VCH = mythicMobs.getVolatileCodeHandler();
 	}
 
 

@@ -7,6 +7,9 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import org.skriptlang.skript.addon.SkriptAddon;
+import io.lumine.mythic.core.skills.CustomComponentRegistry;
+
+import java.util.ArrayList;
 
 public class MythicSkript extends JavaPlugin {
 
@@ -19,7 +22,7 @@ public class MythicSkript extends JavaPlugin {
 	@Override
 	public void onEnable() {
 		plugin = this;
-		Logger log = Bukkit.getLogger();
+		Logger log = plugin.getLogger();
 
 		Plugin mm = Bukkit.getPluginManager().getPlugin("MythicMobs");
 		Plugin sk = Bukkit.getPluginManager().getPlugin("Skript");
@@ -41,13 +44,19 @@ public class MythicSkript extends JavaPlugin {
 
 		addon.loadModules(new MythicSkriptModule());
 
+        CustomComponentRegistry placeholderRegistry = new CustomComponentRegistry(this, new ArrayList<>())
+                .registerCustomComponent(
+                        CustomComponentRegistry.MythicComponentType.PLACEHOLDER,
+                        "me.andromedov.mythicskript.placeholders"
+                );
+
 		log.info("[MythicSkriptAddon] Successfully loaded");
 	}
 
 	@Override
 	public void onDisable() {
-		Bukkit.getLogger().info("[MythicSkriptAddon] Disabled.");
+		plugin.getLogger().info("[MythicSkriptAddon] Disabled.");
 		plugin = null;
-		addon  = null;
+		addon = null;
 	}
 }

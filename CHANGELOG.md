@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.2.0] – The Placeholder Update (2026-07-11)
+
+### Added
+- New MythicMobs placeholder: `<skript.variable_name>` — reads the value of a global Skript variable directly inside any MythicMobs config field that supports placeholders (messages, display names, numeric attributes, conditions, etc.).
+- List variable support via Skript's native `::` separator: `<skript.my_list::1>` returns a single index, `<skript.my_list::*>` returns all values as a comma-separated string.
+
+### Changed
+- Cleaned up some code and comments. Nothing out of the ordinary.
+
 ## [1.1.0] – The Item Update (2026-05-25)
 
 ### Added
