@@ -22,7 +22,7 @@ public class MythicSkript extends JavaPlugin {
 	@Override
 	public void onEnable() {
 		plugin = this;
-		Logger log = Bukkit.getLogger();
+		Logger log = plugin.getLogger();
 
 		Plugin mm = Bukkit.getPluginManager().getPlugin("MythicMobs");
 		Plugin sk = Bukkit.getPluginManager().getPlugin("Skript");
@@ -55,8 +55,8 @@ public class MythicSkript extends JavaPlugin {
 
 	@Override
 	public void onDisable() {
-		Bukkit.getLogger().info("[MythicSkriptAddon] Disabled.");
+		plugin.getLogger().info("[MythicSkriptAddon] Disabled.");
 		plugin = null;
-		addon  = null;
+		addon = null;
 	}
 }
