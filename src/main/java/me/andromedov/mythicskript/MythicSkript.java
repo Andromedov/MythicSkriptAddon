@@ -7,6 +7,9 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import org.skriptlang.skript.addon.SkriptAddon;
+import io.lumine.mythic.core.skills.CustomComponentRegistry;
+
+import java.util.ArrayList;
 
 public class MythicSkript extends JavaPlugin {
 
@@ -40,6 +43,12 @@ public class MythicSkript extends JavaPlugin {
 		addon = ch.njol.skript.Skript.instance().registerAddon(MythicSkript.class, "MythicSkriptAddon");
 
 		addon.loadModules(new MythicSkriptModule());
+
+        CustomComponentRegistry placeholderRegistry = new CustomComponentRegistry(this, new ArrayList<>())
+                .registerCustomComponent(
+                        CustomComponentRegistry.MythicComponentType.PLACEHOLDER,
+                        "me.andromedov.mythicskript.placeholders"
+                );
 
 		log.info("[MythicSkriptAddon] Successfully loaded");
 	}
