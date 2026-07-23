@@ -1,7 +1,6 @@
 package me.andromedov.mythicskript.mythicitem;
 
 import java.util.Optional;
-import javax.annotation.Nullable;
 
 import org.bukkit.event.Event;
 import org.bukkit.inventory.ItemStack;
@@ -20,7 +19,6 @@ public class MythicItemHelper {
      * @param amount amount of ItemStack
      * @return ItemStack or null if MythicItem not found or name is null
      */
-    @Nullable
     public static ItemStack getGeneratedItem(String mythicName, int amount) {
         if (mythicName == null) return null;
 
@@ -38,7 +36,7 @@ public class MythicItemHelper {
      * @param event The event
      * @return Amount of ItemStack, defaults to 1 if null
      */
-    public static int getAmount(@Nullable Expression<Number> amountExpr, Event event) {
+    public static int getAmount(Expression<Number> amountExpr, Event event) {
         if (amountExpr == null) return 1;
         Number raw = amountExpr.getSingle(event);
         return raw != null ? raw.intValue() : 1;

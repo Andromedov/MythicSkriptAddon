@@ -1,7 +1,5 @@
 package me.andromedov.mythicskript.effects.mythicitem;
 
-import javax.annotation.Nullable;
-
 import me.andromedov.mythicskript.mythicitem.MythicItemHelper;
 import org.bukkit.Location;
 import org.bukkit.event.Event;
@@ -27,7 +25,7 @@ public class DropMythicItem extends Effect {
     }
 
     @Override
-    public String toString(@Nullable Event e, boolean debug) {
+    public String toString(Event e, boolean debug) {
         return getClass().getSimpleName() + (e != null ? "@" + e.getEventName() : "");
     }
 

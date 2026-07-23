@@ -1,7 +1,5 @@
 package me.andromedov.mythicskript.expressions.mythicitem;
 
-import javax.annotation.Nullable;
-
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.inventory.ItemStack;
@@ -36,7 +34,7 @@ public class GetAmountOfMythicItem extends SimpleExpression<Integer> {
     }
 
     @Override
-    public String toString(@Nullable Event e, boolean debug) {
+    public String toString(Event e, boolean debug) {
         return getClass().getSimpleName() + (e != null ? "@" + e.getEventName() : "");
     }
 
