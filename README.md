@@ -20,8 +20,8 @@ A powerful bridge between **MythicMobs** and **Skript**. This addon allows you t
 
 - **Server**: Spigot / Paper 1.21+
 - **MythicMobs**: 5.12.0 or newer
-- **Skript**: 2.15.2 or newer
-- **Java**: 21+
+- **Skript**: 2.16.0 or newer
+- **Java**: 25+
 
 ## 🚀 Quick Start (Example)
 
