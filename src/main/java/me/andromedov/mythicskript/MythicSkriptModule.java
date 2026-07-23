@@ -117,6 +117,27 @@ public class MythicSkriptModule implements AddonModule {
      * Registers multiple classes with custom parsers
      */
     private void registerClasses() {
+        Classes.registerClass(new ClassInfo<>(ColorData.class, "colordata")
+                .name("color data").user("colou?rdata")
+                .parser(new Parser<>() {
+                    @Override
+                    public ColorData parse(String input, ParseContext context) {
+                        try {
+                            return ColorData.parse(input);
+                        } catch (IllegalArgumentException ignored) {
+                            return null;
+                        }
+                    }
+
+                    @Override public String toString(ColorData color, int flags) {
+                        return color.toHexString();
+                    }
+
+                    @Override public String toVariableNameString(ColorData color) {
+                        return color.toHexString();
+                    }
+                }));
+
         Classes.registerClass(new ClassInfo<>(ActivePlayer.class, "activeplayer")
                 .name("activeplayer").user("activeplayer")
                 .defaultExpression(new EventValueExpression<>(ActivePlayer.class))

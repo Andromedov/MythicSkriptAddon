@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.3.0] – The Function Update (2026-07-23)
+
+### Added
+
+- `skfunction` now maps custom MythicMobs mechanic fields to Skript function
+  parameters with the same name.
+- Added the Skript `colordata` type for `#RRGGBB`, `#AARRGGBB`, `R,G,B`, and
+  Bukkit dye-color values.
+- Custom `text`, `number`, `boolean`, and `colordata` parameters support
+  MythicMobs placeholders resolved at cast time.
+
 ## [1.2.0] – The Placeholder Update (2026-07-11)
 
 ### Added
