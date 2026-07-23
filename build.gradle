@@ -26,10 +26,10 @@ dependencies {
     // Paper API — compileOnly
     compileOnly "io.papermc.paper:paper-api:${paperVersion}"
 
-    // Skript 2.15.2 — compileOnly
+    // Skript — compileOnly
     compileOnly "com.github.SkriptLang:Skript:${skriptVersion}"
 
-    // MythicMobs 5.12.0 — compileOnly
+    // MythicMobs — compileOnly
     compileOnly "io.lumine:Mythic-Dist:${mythicMobsVersion}"
 
     // bStats
