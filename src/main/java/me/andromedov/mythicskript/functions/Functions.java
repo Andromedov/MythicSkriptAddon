@@ -43,9 +43,8 @@ public class Functions implements Listener {
 	@SuppressWarnings("unused")
 	@EventHandler
 	public void onMechanicLoad(MythicMechanicLoadEvent e) {
-		switch (e.getMechanicName().toLowerCase()) {
-			case "skriptskill", "skfunction" ->
-					e.register(new SkriptfunctionMechanic(e.getContainer(), e.getConfig()));
+		if (e.getMechanicName().equalsIgnoreCase("skfunction")) {
+			e.register(new SkriptfunctionMechanic(e.getContainer(), e.getConfig()));
 		}
 	}
 

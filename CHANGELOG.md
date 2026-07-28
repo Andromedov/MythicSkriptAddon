@@ -12,6 +12,9 @@ All notable changes to this project will be documented in this file.
 - **Runtime placeholder resolution:** Custom parameter values support MythicMobs
   placeholders and are resolved when the skill is cast, including target-aware
   values for entity and location targets.
+- **Repeated parameter types:** Functions may declare multiple parameters of the
+  same type, including automatically supplied `skilldata`, `entity`, `player`,
+  and `location` values as well as multiple named configuration parameters.
 - **Supported custom parameter types:** Added support for `text`, `number`,
   `boolean`, and `colordata` parameters in `skfunction` mechanics.
 - **Color data type:** Added the Skript `colordata` type with support for
@@ -26,6 +29,10 @@ All notable changes to this project will be documented in this file.
   reports missing or unsupported configuration values through Skript warnings.
 - Invalid custom values return `INVALID_CONFIG` instead of invoking the Skript
   function with incomplete or incorrectly typed arguments.
+- `skfunction` now runs synchronously and validates concrete entity subtypes, so
+  a `player` parameter only receives an actual player target.
+- Separated the legacy `skriptskill` event mechanic from the direct `skfunction`
+  mechanic to prevent one registration from overwriting the other.
 - Updated the supported platform range to Paper 1.21.4 – 26.2 with Java 21,
   Skript 2.16.0, and MythicMobs 5.12.0.
 - Updated the plugin metadata API version to 1.21.4 and the release workflow game

@@ -22,24 +22,25 @@ import io.lumine.mythic.api.skills.placeholders.PlaceholderString;
 import io.lumine.mythic.bukkit.BukkitAdapter;
 import io.lumine.mythic.core.skills.SkillMechanic;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.List;
+
 public class SkriptfunctionMechanic extends SkillMechanic implements INoTargetSkill,ITargetedEntitySkill,ITargetedLocationSkill {
 	private final Function<?> function;
 	private final ConfigArgument[] configArguments;
+	private final AutoArgument[] autoArguments;
 	private final int parameterCount;
-	private final int dataPos;
-	private final int locationPos;
-	private final int entityPos;
 	private final String name;
 	private final boolean valid;
 
 	public SkriptfunctionMechanic(SkillMechanic skill,MythicLineConfig mlc) {
 		super(skill.getManager(),skill.getFile(), mlc.getLine(), mlc);
+		this.setAsyncSafe(false);
 
-		name=mlc.getString("name","");
+		name=mlc.getString(new String[]{"name", "n"},"");
 		function=Functions.getGlobalFunction(name);
-		int foundDataPos = -1;
-		int foundLocationPos = -1;
-		int foundEntityPos = -1;
+		List<AutoArgument> foundAutoArguments = new ArrayList<>();
 		int foundParameterCount = 0;
 		boolean foundValid = function != null;
 
@@ -51,13 +52,14 @@ public class SkriptfunctionMechanic extends SkillMechanic implements INoTargetSk
 			for(int i=0;i<params.size();i++) {
 				Parameter<?> parameter = params.get(i);
 				Class<?> type = parameter.type();
-				if (type != null) {
-					if (SkillMetadata.class.isAssignableFrom(type)) {
-						foundDataPos = i;
-					} else if (Location.class.isAssignableFrom(type)) {
-						foundLocationPos = i;
-					} else if (Entity.class.isAssignableFrom(type)) {
-						foundEntityPos = i;
+				if (type == null) {
+					Skript.warning("Unknown skfunction parameter type for parameter '" + parameter.name()
+							+ "' in function " + name);
+					foundValid = false;
+				} else {
+					AutoKind autoKind = getAutoKind(type);
+					if (autoKind != null) {
+						foundAutoArguments.add(new AutoArgument(i, type, autoKind));
 					} else if (isSupportedConfigType(type)) {
 						String rawValue = mlc.getString(parameter.name(), null);
 						if (rawValue == null) {
@@ -81,24 +83,21 @@ public class SkriptfunctionMechanic extends SkillMechanic implements INoTargetSk
 			}
 		} else {
 			configArguments = new ConfigArgument[0];
-			Skript.warning("Cant find function "+name);
+			Skript.warning("Can't find function " + name);
 		}
 
 		parameterCount = foundParameterCount;
-		dataPos = foundDataPos;
-		locationPos = foundLocationPos;
-		entityPos = foundEntityPos;
+		autoArguments = foundAutoArguments.toArray(AutoArgument[]::new);
 		valid = foundValid;
 	}
 
 	@Override
 	@SuppressWarnings({"removal"})
 	public SkillResult castAtLocation(SkillMetadata meta, AbstractLocation aLocation) {
-		Object[][] parameters = createParameters(meta);
+		Location target = BukkitAdapter.adapt(aLocation);
+		Object[][] parameters = createParameters(meta, null, target);
 		if (parameters == null) return SkillResult.INVALID_CONFIG;
 
-		if(locationPos>-1) parameters[locationPos]=new Location[] {BukkitAdapter.adapt(aLocation)};
-		if(entityPos>-1) parameters[entityPos]=new Entity[0];
 		if (!populateConfigArguments(parameters, meta, null, aLocation)) {
 			return SkillResult.INVALID_CONFIG;
 		}
@@ -110,11 +109,9 @@ public class SkriptfunctionMechanic extends SkillMechanic implements INoTargetSk
 	@Override
 	@SuppressWarnings({"removal"})
 	public SkillResult castAtEntity(SkillMetadata meta, AbstractEntity aEntity) {
-		Object[][] parameters = createParameters(meta);
+		Object[][] parameters = createParameters(meta, aEntity.getBukkitEntity(), null);
 		if (parameters == null) return SkillResult.INVALID_CONFIG;
 
-		if(locationPos>-1) parameters[locationPos]=new Location[0];
-		if(entityPos>-1) parameters[entityPos]=new Entity[] {aEntity.getBukkitEntity()};
 		if (!populateConfigArguments(parameters, meta, aEntity, null)) {
 			return SkillResult.INVALID_CONFIG;
 		}
@@ -126,11 +123,9 @@ public class SkriptfunctionMechanic extends SkillMechanic implements INoTargetSk
 	@Override
 	@SuppressWarnings({"removal"})
 	public SkillResult cast(SkillMetadata meta) {
-		Object[][] parameters = createParameters(meta);
+		Object[][] parameters = createParameters(meta, null, null);
 		if (parameters == null) return SkillResult.INVALID_CONFIG;
 
-		if(locationPos>-1) parameters[locationPos]=new Location[0];
-		if(entityPos>-1) parameters[entityPos]=new Entity[0];
 		if (!populateConfigArguments(parameters, meta, null, null)) {
 			return SkillResult.INVALID_CONFIG;
 		}
@@ -139,14 +134,37 @@ public class SkriptfunctionMechanic extends SkillMechanic implements INoTargetSk
 		return SkillResult.SUCCESS;
 	}
 
-	private Object[][] createParameters(SkillMetadata meta) {
+	private Object[][] createParameters(SkillMetadata meta, Entity targetEntity, Location targetLocation) {
 		if (!valid || function == null) {
 			return null;
 		}
 
 		Object[][] parameters = new Object[parameterCount][];
-		if(dataPos>-1) parameters[dataPos]=new SkillMetadata[] {meta};
+		for (AutoArgument argument : autoArguments) {
+			Object value = switch (argument.kind()) {
+				case SKILL_DATA -> meta;
+				case ENTITY -> targetEntity;
+				case LOCATION -> targetLocation;
+			};
+
+			if (value != null && !argument.type().isInstance(value)) {
+				Skript.warning("Invalid target type for skfunction parameter at position "
+						+ (argument.position() + 1) + " in function " + name + ": expected "
+						+ argument.type().getSimpleName() + ", got " + value.getClass().getSimpleName());
+				return null;
+			}
+
+			parameters[argument.position()] = createTypedArray(argument.type(), value);
+		}
 		return parameters;
+	}
+
+	private static Object[] createTypedArray(Class<?> type, Object value) {
+		Object[] values = (Object[]) Array.newInstance(type, value == null ? 0 : 1);
+		if (value != null) {
+			values[0] = value;
+		}
+		return values;
 	}
 
 	private boolean populateConfigArguments(
@@ -182,32 +200,52 @@ public class SkriptfunctionMechanic extends SkillMechanic implements INoTargetSk
 	private static boolean isSupportedConfigType(Class<?> type) {
 		return type == String.class
 				|| type == Boolean.class
-				|| Number.class.isAssignableFrom(type)
-				|| ColorData.class.isAssignableFrom(type)
-				|| Color.class.isAssignableFrom(type);
+				|| isSupportedNumberType(type)
+				|| type == ColorData.class
+				|| type == Color.class;
 	}
 
-	private static Object convert(String value, Class<?> type) {
+	private static boolean isSupportedNumberType(Class<?> type) {
+		return type == Number.class
+				|| type == Double.class
+				|| type == Integer.class
+				|| type == Long.class
+				|| type == Float.class
+				|| type == Short.class
+				|| type == Byte.class;
+	}
+
+	private static AutoKind getAutoKind(Class<?> type) {
+		if (SkillMetadata.class.isAssignableFrom(type)) return AutoKind.SKILL_DATA;
+		if (Location.class.isAssignableFrom(type)) return AutoKind.LOCATION;
+		if (Entity.class.isAssignableFrom(type)) return AutoKind.ENTITY;
+		return null;
+	}
+
+	static Object convert(String value, Class<?> type) {
 		if (type == String.class) return value;
+		String normalized = value == null ? null : value.trim();
 		if (type == Boolean.class) {
-			if ("true".equalsIgnoreCase(value)) return true;
-			if ("false".equalsIgnoreCase(value)) return false;
+			if ("true".equalsIgnoreCase(normalized)) return true;
+			if ("false".equalsIgnoreCase(normalized)) return false;
 			throw new IllegalArgumentException("expected true or false");
 		}
-		if (ColorData.class.isAssignableFrom(type) || Color.class.isAssignableFrom(type)) {
-			return ColorData.parse(value);
+		if (type == ColorData.class || type == Color.class) {
+			return ColorData.parse(normalized);
 		}
 		try {
-			if (type == Integer.class) return Integer.valueOf(value);
-			if (type == Long.class) return Long.valueOf(value);
-			if (type == Float.class) return Float.valueOf(value);
-			if (type == Short.class) return Short.valueOf(value);
-			if (type == Byte.class) return Byte.valueOf(value);
-			return Double.valueOf(value);
+			if (type == Integer.class) return Integer.valueOf(normalized);
+			if (type == Long.class) return Long.valueOf(normalized);
+			if (type == Float.class) return Float.valueOf(normalized);
+			if (type == Short.class) return Short.valueOf(normalized);
+			if (type == Byte.class) return Byte.valueOf(normalized);
+			return Double.valueOf(normalized);
 		} catch (NumberFormatException exception) {
 			throw new IllegalArgumentException("expected a number", exception);
 		}
 	}
 
 	private record ConfigArgument(String name, Class<?> type, PlaceholderString value) {}
+	private record AutoArgument(int position, Class<?> type, AutoKind kind) {}
+	private enum AutoKind { SKILL_DATA, ENTITY, LOCATION }
 }
