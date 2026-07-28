@@ -2,32 +2,41 @@
 
 All notable changes to this project will be documented in this file.
 
-## v1.3.0 – The Function Update
+## [1.3.0] – The Function Update (2026-07-29)
 
-> Adds custom named parameters to `skfunction`, allowing MythicMobs skills to pass text, numbers, booleans, and colors directly into Skript functions.
+### Added
 
----
+- **Named `skfunction` parameters:** MythicMobs mechanic fields are now mapped to
+  Skript function parameters by name, so a function can receive custom values
+  directly from its skill configuration.
+- **Runtime placeholder resolution:** Custom parameter values support MythicMobs
+  placeholders and are resolved when the skill is cast, including target-aware
+  values for entity and location targets.
+- **Supported custom parameter types:** Added support for `text`, `number`,
+  `boolean`, and `colordata` parameters in `skfunction` mechanics.
+- **Color data type:** Added the Skript `colordata` type with support for
+  `#RRGGBB`, `#AARRGGBB`, `R,G,B`, and Bukkit dye-color names.
 
-### ✨ New Syntax (Custom Parameters API)
+### Changed
 
-- **Named Function Parameters:**
-    - MythicMobs skill fields are now passed to Skript function parameters with the same name.
-    - `text`, `number`, `boolean`, and `colordata` parameters are supported.
-- **Runtime Values:**
-    - Custom parameter values support MythicMobs placeholders and are resolved when the skill is cast.
-    - Entity and location targets can be used when resolving parameter values.
-- **Color Data Support:**
-    - `#RRGGBB`, `#AARRGGBB`, `R,G,B`, and Bukkit dye-color names are supported.
+- `SkillMetadata`, `entity`, and `location` parameters continue to be supplied
+  automatically by MythicMobs, while custom parameters are read from fields with
+  matching names in the `skfunction` configuration.
+- `skfunction` now validates function parameters during mechanic creation and
+  reports missing or unsupported configuration values through Skript warnings.
+- Invalid custom values return `INVALID_CONFIG` instead of invoking the Skript
+  function with incomplete or incorrectly typed arguments.
+- Updated the supported platform range to Paper 1.21.4 – 26.2 with Java 21,
+  Skript 2.16.0, and MythicMobs 5.12.0.
+- Updated the plugin metadata API version to 1.21.4 and the release workflow game
+  range to `>=1.21.4 <=26.2`.
 
----
+### Removed
 
-### ♻️ Core Refactoring & Improvements
-
-- **Validation:** Missing, unsupported, and invalid function parameters now produce clear Skript warnings and return `INVALID_CONFIG`.
-- **Compatibility:** Updated support for Paper/Purpur 1.21.4–26.2, Java 21, Skript 2.16.0, and MythicMobs 5.12.0.
-- **Clean Up:** Removed the unused `version.txt` resource, the obsolete ActiveMob wiki page, and legacy `javax.annotation.Nullable` usages.
-
-> *Check out [the Wiki](https://github.com/Andromedov/MythicSkriptAddon/wiki) for a full guide and examples on how to use the new `skfunction` parameters!*
+- Removed the unused `src/main/resources/version.txt` resource.
+- Removed the obsolete `wiki/ActiveMob.md` page.
+- Removed legacy `javax.annotation.Nullable` usages from the item integration
+  classes and placeholder implementation.
 
 ## [1.2.0] – The Placeholder Update (2026-07-11)
 
