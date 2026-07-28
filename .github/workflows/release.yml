@@ -158,7 +158,7 @@ jobs:
             paper
             purpur
           game-versions: |
-            >=1.21.1 <=26.1.2
+            >=1.21.4 <=26.2
           dependencies: |
             mythicmobs(required){modrinth:NLuc7Jjh}
             skript(required){modrinth:xFNYAvMk}
