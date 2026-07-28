@@ -16,7 +16,8 @@ jobs:
       do_release: ${{ steps.parse.outputs.do_release }}
       version_tag: ${{ steps.parse.outputs.version_tag }}
       is_prerelease: ${{ steps.parse.outputs.is_prerelease }}
-      changelog: ${{ steps.get_pr_body.outputs.changelog }}
+      changelog: ${{ steps.get_release_notes.outputs.changelog }}
+      release_name: ${{ steps.get_release_notes.outputs.release_name }}
 
     steps:
       - name: Checkout code
@@ -47,38 +48,42 @@ jobs:
           echo "is_prerelease=$IS_PRERELEASE" >> $GITHUB_OUTPUT
           echo "version_tag=$VERSION" >> $GITHUB_OUTPUT
 
-      - name: Get Changelog from PR
-        id: get_pr_body
+      - name: Get release notes from merged PR
+        id: get_release_notes
         if: steps.parse.outputs.do_release == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
-          TARGET_USER: "Andromedov"
         run: |
-          PR_NUMBER=$(gh pr list --search "${{ github.sha }}" --state merged --json number --jq '.[0].number')
+          PR_NUMBER=$(gh api "repos/${GITHUB_REPOSITORY}/commits/${GITHUB_SHA}/pulls" \
+            --jq '[.[] | select(.merged_at != null and .base.ref == "main")] | first | .number // empty')
           
-          if [ -z "$PR_NUMBER" ] || [ "$PR_NUMBER" == "null" ]; then
-            echo "No PR found for commit ${{ github.sha }}"
-            CHANGELOG="No changelog found."
-          else
-            echo "Found PR #$PR_NUMBER"
-          
-            CHANGELOG=$(gh pr view $PR_NUMBER --json comments --jq ".comments[] | select(.author.login == \"$TARGET_USER\" and (.body | contains(\"📦 MythicSkriptAddon\") and contains(\"Changelog\"))) | .body" | tail -n 1)
-          
-            if [ -z "$CHANGELOG" ]; then
-              echo "Not found in comments by $TARGET_USER, checking PR description..."
-              CHANGELOG=$(gh pr view $PR_NUMBER --json body,author --jq "select(.author.login == \"$TARGET_USER\" and (.body | contains(\"📦 MythicSkriptAddon\") and contains(\"Changelog\"))) | .body")
-            fi
-          
-            if [ -z "$CHANGELOG" ]; then
-                echo "DEBUG: Valid changelog by user $TARGET_USER not found."
-                CHANGELOG="Changelog not detected from user $TARGET_USER in PR #$PR_NUMBER."
-            fi
+          if [ -z "$PR_NUMBER" ]; then
+            echo "::error::No merged PR is associated with commit ${GITHUB_SHA}."
+            exit 1
+          fi
+
+          echo "Found merged PR #$PR_NUMBER"
+          CHANGELOG=$(gh pr view "$PR_NUMBER" --json body --jq '.body')
+
+          if [ -z "$(printf '%s' "$CHANGELOG" | tr -d '[:space:]')" ]; then
+            echo "::error::PR #$PR_NUMBER has no release notes in its description."
+            exit 1
+          fi
+
+          RELEASE_NAME=$(printf '%s\n' "$CHANGELOG" | sed -n 's/^##[[:space:]]*//p' | head -n 1)
+          VERSION_NUMBER="${{ steps.parse.outputs.version_tag }}"
+          VERSION_NUMBER="${VERSION_NUMBER#v}"
+
+          if [[ ! "$RELEASE_NAME" =~ ^\[?v?${VERSION_NUMBER}\]?[[:space:]]+[-–—][[:space:]]+.+$ ]]; then
+            echo "::error::The first PR heading must use '## [${VERSION_NUMBER}] – Release Name'."
+            exit 1
           fi
           
           {
             echo "changelog<<EOF"
             echo "$CHANGELOG"
             echo "EOF"
+            echo "release_name=$RELEASE_NAME"
           } >> $GITHUB_OUTPUT
 
       - name: Set up Java 21
@@ -86,6 +91,7 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '21'
+          cache: 'gradle'
 
       - name: Make gradlew executable
         run: chmod +x gradlew
@@ -138,7 +144,7 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ needs.build.outputs.version_tag }}
-          name: Release ${{ needs.build.outputs.version_tag }}
+          name: ${{ needs.build.outputs.release_name }}
           body: ${{ needs.build.outputs.changelog }}
           prerelease: ${{ needs.build.outputs.is_prerelease }}
           files: release-artifact/*.jar
@@ -149,7 +155,7 @@ jobs:
         with:
           modrinth-id: "62Xr9WQ6"
           modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
-          name: ${{ needs.build.outputs.version_tag }}
+          name: ${{ needs.build.outputs.release_name }}
           version: ${{ needs.build.outputs.version_tag }}
           version-type: ${{ needs.build.outputs.is_prerelease == 'true' && 'beta' || 'release' }}
           changelog: ${{ needs.build.outputs.changelog }}
