@@ -37,11 +37,16 @@ jobs:
 
           if [[ $COMMIT_MSG == *"[release]"* ]]; then
             DO_RELEASE="true"
-            VERSION=$(echo "$COMMIT_MSG" | sed -n 's/.*\[release\] \(v[0-9.]\+\).*/\1/p')
+            VERSION=$(echo "$COMMIT_MSG" | sed -nE 's/.*\[release\][[:space:]]+(v[0-9]+\.[0-9]+\.[0-9]+)([[:space:]].*)?$/\1/p')
           elif [[ $COMMIT_MSG == *"[pre-release]"* ]]; then
             DO_RELEASE="true"
             IS_PRERELEASE="true"
-            VERSION=$(echo "$COMMIT_MSG" | sed -n 's/.*\[pre-release\] \(v[0-9.]\+.*\).*/\1/p')
+            VERSION=$(echo "$COMMIT_MSG" | sed -nE 's/.*\[pre-release\][[:space:]]+(v[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?)([[:space:]].*)?$/\1/p')
+          fi
+
+          if [[ "$DO_RELEASE" == "true" && -z "$VERSION" ]]; then
+            echo "::error::Release commit message contains an invalid or missing semantic version."
+            exit 1
           fi
 
           echo "do_release=$DO_RELEASE" >> $GITHUB_OUTPUT
@@ -73,16 +78,18 @@ jobs:
           RELEASE_NAME=$(printf '%s\n' "$CHANGELOG" | sed -n 's/^##[[:space:]]*//p' | head -n 1)
           VERSION_NUMBER="${{ steps.parse.outputs.version_tag }}"
           VERSION_NUMBER="${VERSION_NUMBER#v}"
+          VERSION_PATTERN=$(printf '%s' "$VERSION_NUMBER" | sed 's/\./\\./g')
 
-          if [[ ! "$RELEASE_NAME" =~ ^\[?v?${VERSION_NUMBER}\]?[[:space:]]+[-–—][[:space:]]+.+$ ]]; then
+          if [[ ! "$RELEASE_NAME" =~ ^\[?v?${VERSION_PATTERN}\]?[[:space:]]+[-–—][[:space:]]+.+$ ]]; then
             echo "::error::The first PR heading must use '## [${VERSION_NUMBER}] – Release Name'."
             exit 1
           fi
           
+          DELIMITER="release-notes-$(date +%s)-$RANDOM"
           {
-            echo "changelog<<EOF"
+            echo "changelog<<$DELIMITER"
             echo "$CHANGELOG"
-            echo "EOF"
+            echo "$DELIMITER"
             echo "release_name=$RELEASE_NAME"
           } >> $GITHUB_OUTPUT
 
