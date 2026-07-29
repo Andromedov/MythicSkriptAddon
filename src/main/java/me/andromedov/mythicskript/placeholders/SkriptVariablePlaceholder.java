@@ -10,7 +10,6 @@ import io.lumine.mythic.core.skills.placeholders.types.GenericPlaceholder;
 import io.lumine.mythic.core.skills.placeholders.types.GenericPlaceholderTypes.StringPlaceholder;
 import io.lumine.mythic.core.utils.annotations.MythicPlaceholder;
 
-import javax.annotation.Nullable;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -44,7 +43,6 @@ public class SkriptVariablePlaceholder extends GenericPlaceholder<String> implem
         initializeMetaKeywords();
     }
 
-    @Nullable
     @Override
     public String applyWithMetaKeywords(PlaceholderContext placeholderContext) {
         String rawName = this.variableName.getOrDefault(placeholderContext, PlaceholderString::get, null);
@@ -71,7 +69,6 @@ public class SkriptVariablePlaceholder extends GenericPlaceholder<String> implem
      * Resolves a Skript list variable (e.g. "my_list::*") into a single,
      * comma-separated string. Returns null if the list is empty or unset.
      */
-    @Nullable
     private String resolveListVariable(String listWildcardName) {
         Object raw = Variables.getVariable(listWildcardName, null, false);
         if (!(raw instanceof Map<?, ?> listMap) || listMap.isEmpty()) {

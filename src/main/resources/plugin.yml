@@ -2,6 +2,6 @@ name: MythicSkriptAddon
 main: me.andromedov.mythicskript.MythicSkript
 version: ${version}
 authors: ["Andromedov", "BerndiVader"]
-api-version: 1.21
+api-version: 1.21.4
 depend: [MythicMobs, Skript]
 description: Skript Addon to add MythicMobs support

@@ -1,8 +1,8 @@
 # MythicSkriptAddon 🐉
 
-[![Paper](https://img.shields.io/badge/Paper-1.21.x-brightgreen.svg)](https://papermc.io/)
+[![Paper](https://img.shields.io/badge/Paper-1.21.4%20--%2026.2-brightgreen.svg)](https://papermc.io/)
 [![MythicMobs](https://img.shields.io/badge/MythicMobs-5.12.0-orange.svg)](https://mythiccraft.io/)
-[![Skript](https://img.shields.io/badge/Skript-2.15.2-blue.svg)](https://github.com/SkriptLang/Skript)
+[![Skript](https://img.shields.io/badge/Skript-2.16.0-blue.svg)](https://github.com/SkriptLang/Skript)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 A powerful bridge between **MythicMobs** and **Skript**. This addon allows you to create custom mechanics, conditions, targeters, and drops for MythicMobs using purely Skript syntax. It also gives you full control over ActiveMobs and MythicSpawners directly from your scripts.
@@ -18,9 +18,9 @@ A powerful bridge between **MythicMobs** and **Skript**. This addon allows you t
 
 ## 📦 Requirements
 
-- **Server**: Spigot / Paper 1.21+
+- **Server**: Paper or its fork 1.21.4 – 26.2
 - **MythicMobs**: 5.12.0 or newer
-- **Skript**: 2.15.2 or newer
+- **Skript**: 2.16.0 or newer
 - **Java**: 21+
 
 ## 🚀 Quick Start (Example)

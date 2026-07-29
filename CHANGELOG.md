@@ -2,6 +2,49 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.3.0] – The Function Update (2026-07-29)
+
+### Added
+
+- **Named `skfunction` parameters:** MythicMobs mechanic fields are now mapped to
+  Skript function parameters by name, so a function can receive custom values
+  directly from its skill configuration.
+- **Runtime placeholder resolution:** Custom parameter values support MythicMobs
+  placeholders and are resolved when the skill is cast, including target-aware
+  values for entity and location targets.
+- **Repeated parameter types:** Functions may declare multiple parameters of the
+  same type, including automatically supplied `skilldata`, `entity`, `player`,
+  and `location` values as well as multiple named configuration parameters.
+- **Supported custom parameter types:** Added support for `text`, `number`,
+  `boolean`, and `colordata` parameters in `skfunction` mechanics.
+- **Color data type:** Added the Skript `colordata` type with support for
+  `#RRGGBB`, `#AARRGGBB`, `R,G,B`, and Bukkit dye-color names.
+
+### Changed
+
+- `SkillMetadata`, `entity`, and `location` parameters continue to be supplied
+  automatically by MythicMobs, while custom parameters are read from fields with
+  matching names in the `skfunction` configuration.
+- `skfunction` now validates function parameters during mechanic creation and
+  reports missing or unsupported configuration values through Skript warnings.
+- Invalid custom values return `INVALID_CONFIG` instead of invoking the Skript
+  function with incomplete or incorrectly typed arguments.
+- `skfunction` now runs synchronously and validates concrete entity subtypes, so
+  a `player` parameter only receives an actual player target.
+- Separated the legacy `skriptskill` event mechanic from the direct `skfunction`
+  mechanic to prevent one registration from overwriting the other.
+- Updated the supported platform range to Paper 1.21.4 – 26.2 with Java 21,
+  Skript 2.16.0, and MythicMobs 5.12.0.
+- Updated the plugin metadata API version to 1.21.4 and the release workflow game
+  range to `>=1.21.4 <=26.2`.
+
+### Removed
+
+- Removed the unused `src/main/resources/version.txt` resource.
+- Removed the obsolete `wiki/ActiveMob.md` page.
+- Removed legacy `javax.annotation.Nullable` usages from the item integration
+  classes and placeholder implementation.
+
 ## [1.2.0] – The Placeholder Update (2026-07-11)
 
 ### Added

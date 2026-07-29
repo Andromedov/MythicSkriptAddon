@@ -1,7 +1,5 @@
 package me.andromedov.mythicskript.effects.mythicitem;
 
-import javax.annotation.Nullable;
-
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.inventory.ItemStack;
@@ -29,7 +27,7 @@ public class TakeMythicItem extends Effect {
     }
 
     @Override
-    public String toString(@Nullable Event e, boolean debug) {
+    public String toString(Event e, boolean debug) {
         return getClass().getSimpleName() + (e != null ? "@" + e.getEventName() : "");
     }
 

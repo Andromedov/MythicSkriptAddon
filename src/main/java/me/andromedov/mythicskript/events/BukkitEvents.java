@@ -51,8 +51,7 @@ public class BukkitEvents implements Listener {
 
 	@EventHandler
 	public void onMythicMobsCustomMechanicsLoad(MythicMechanicLoadEvent e) {
-		String name = e.getMechanicName().toLowerCase();
-		if (name.equals("skriptskill") || name.equals("skfunction")) {
+		if (e.getMechanicName().equalsIgnoreCase("skriptskill")) {
 			SkillMechanic skill = new MythicSkriptSkill(e.getContainer(), e.getConfig());
 			e.register(skill);
 		}

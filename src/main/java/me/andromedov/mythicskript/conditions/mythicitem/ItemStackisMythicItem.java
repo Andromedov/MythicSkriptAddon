@@ -1,7 +1,5 @@
 package me.andromedov.mythicskript.conditions.mythicitem;
 
-import javax.annotation.Nullable;
-
 import org.bukkit.event.Event;
 import org.bukkit.inventory.ItemStack;
 
@@ -25,7 +23,7 @@ public class ItemStackisMythicItem extends Condition {
 	}
 
 	@Override
-	public String toString(@Nullable Event e, boolean debug) {
+	public String toString(Event e, boolean debug) {
 		return getClass().getSimpleName() + (e != null ? "@" + e.getEventName() : "");
 	}
 
