@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.3.1] – The Data-Markers Fix (2026-09-27)
+
+### Changed
+
+- Made the `skilldata` and `dropdata` markers mandatory in metadata expressions,
+  preventing ambiguous forms such as `caster of {_data}` from resolving to the
+  wrong metadata type.
+
 ## [1.3.0] – The Function Update (2026-07-29)
 
 ### Added

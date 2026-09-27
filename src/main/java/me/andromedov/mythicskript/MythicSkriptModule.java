@@ -357,7 +357,7 @@ public class MythicSkriptModule implements AddonModule {
         eff(registry, AddItemToMobDrop.class,        "add item %itemstack% to mobdrop %mobdrop%");
 
         // --- DropMetadata ---
-        eff(registry, SetAmount.class, "set amount[ for ][dropdata] %dropdata% to %number%");
+        eff(registry, SetAmount.class, "set amount[ for ]dropdata %dropdata% to %number%");
 
         // --- SkriptConditionEvent ---
         eff(registry, SetConditionMeet.class, "set condition meet to %boolean%");
@@ -444,33 +444,33 @@ public class MythicSkriptModule implements AddonModule {
 
         // === SkillMetadata ===
         expr(registry, GetCaster.class,
-                Entity.class,   "[get] caster [of] [skilldata] %skilldata%");
+                Entity.class,   "[get] caster [of] skilldata %skilldata%");
         expr(registry, GetCause.class,
-                String.class,   "[get] cause [of] [skilldata] %skilldata%");
+                String.class,   "[get] cause [of] skilldata %skilldata%");
         expr(registry, GetEntityTargets.class,   Entity.class,
-                "[get] entitytargets [of] [skilldata] %skilldata%");
+                "[get] entitytargets [of] skilldata %skilldata%");
         expr(registry, GetTargetLocations.class, Location.class,
-                "[get] locationtargets [of] [skilldata] %skilldata%");
+                "[get] locationtargets [of] skilldata %skilldata%");
         expr(registry, GetOriginLocation.class,  Location.class,
-                "[get] origin [of] [skilldata] %skilldata%");
+                "[get] origin [of] skilldata %skilldata%");
         expr(registry, GetPower.class,           Float.class,
-                "[get] power [of] [skilldata] %skilldata%");
+                "[get] power [of] skilldata %skilldata%");
         expr(registry, GetTrigger.class,
-                Entity.class,   "[get] trigger [entity] [of] [skilldata] %skilldata%");
+                Entity.class,   "[get] trigger [entity] [of] skilldata %skilldata%");
 
         // === DropMetadata ===
         expr(registry, GetDropper.class,
-                Entity.class,   "[get] dropper [of] [dropdata] %dropdata%");
+                Entity.class,   "[get] dropper [of] dropdata %dropdata%");
         expr(registry, me.andromedov.mythicskript.expressions.dropmetadata.GetCaster.class,
-                Entity.class,   "[get] caster [of] [dropdata] %dropdata%");
+                Entity.class,   "[get] caster [of] dropdata %dropdata%");
         expr(registry, me.andromedov.mythicskript.expressions.dropmetadata.GetCause.class,
-                Entity.class,   "[get] cause [of] [dropdata] %dropdata%");
+                Entity.class,   "[get] cause [of] dropdata %dropdata%");
         expr(registry, me.andromedov.mythicskript.expressions.dropmetadata.GetTrigger.class,
-                Entity.class,   "[get] trigger [of] [dropdata] %dropdata%");
+                Entity.class,   "[get] trigger [of] dropdata %dropdata%");
         expr(registry, GetAmount.class,
-                Float.class,    "[get] amount [of] [dropdata] %dropdata%");
+                Float.class,    "[get] amount [of] dropdata %dropdata%");
         expr(registry, GetGenerations.class,
-                Integer.class,  "[get] generations [of] [dropdata] %dropdata%");
+                Integer.class,  "[get] generations [of] dropdata %dropdata%");
 
         // === Skill event expressions ===
         expr(registry, DeathEventAttacker.class,  Entity.class,  "event-killer");

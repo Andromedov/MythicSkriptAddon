@@ -37,7 +37,7 @@ SkriptSkillExample:
 **In your script file (.sk):**
 ```shell
 function my_custom_skill(data: skilldata, target: entity, loc: location) :: boolean:
-    broadcast "MythicMob %caster of {_data}% used a skill on %{_target}%!"
+    broadcast "MythicMob %caster of skilldata {_data}% used a skill on %{_target}%!"
     apply glowing to {_target} for 5 seconds
     return true
 ```
